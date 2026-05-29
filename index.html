@@ -1,421 +1,627 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto 2026 - Main Aprovada</title>
+    <title>Mentoria 2026 | Psicopedagogo</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff', 100: '#ede9fe', 400: '#a78bfa', 500: '#8b5cf6',
+                            600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .hero-pattern {
-            background-color: #1e3a8a;
-            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%233b82f6' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .task-item {
-            transition: all 0.2s ease;
-        }
-        .task-item:hover {
-            transform: translateX(5px);
-        }
-        .checked-item {
-            text-decoration: line-through;
-            color: #9ca3af; /* gray-400 */
-            background-color: #f9fafb;
-        }
-        .checked-icon {
-            color: #10b981; /* green-500 */
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        
+        /* Oculta a barra de rolagem horizontal nas abas superiores, mantendo o scroll no celular */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex">
 
-    <!-- Navbar -->
-    <nav class="bg-white shadow-md fixed w-full z-50">
-        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-graduation-cap text-blue-800 text-2xl"></i>
-                <span class="font-bold text-xl text-blue-900 tracking-tight">PROJETO 2026</span>
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+    <aside id="sidebar" class="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-30 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 sidebar-transition">
+        <div class="p-6 border-b border-slate-800 text-center relative">
+            <button class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white" onclick="toggleSidebar()">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="w-16 h-16 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-2xl">
+                <i class="fa-solid fa-brain"></i>
             </div>
-            <div class="hidden md:flex space-x-6 text-sm font-semibold text-gray-600">
-                <a href="#resumo" class="hover:text-blue-800 transition">Resumo</a>
-                <a href="#cronograma" class="hover:text-blue-800 transition">Cronograma</a>
-                <a href="#conteudo" class="hover:text-blue-800 transition">Conteúdo Programático</a>
-                <a href="#provas" class="hover:text-blue-800 transition">Banco de Questões</a>
+            <h1 class="text-xl font-bold tracking-tight">Mentoria 2026</h1>
+            <p class="text-slate-400 text-sm mt-1">Assunção/PB</p>
+        </div>
+
+        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+            <button onclick="switchTab('edital')" id="btn-edital" class="nav-btn w-full flex items-center gap-3 px-4 py-3 bg-brand-600 text-white rounded-xl transition-all font-medium">
+                <i class="fa-solid fa-file-contract w-5"></i> Raio-X do Edital
+            </button>
+            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all font-medium">
+                <i class="fa-solid fa-calendar-week w-5"></i> Cronograma (Sem. 1)
+            </button>
+            <button onclick="switchTab('materiais')" id="btn-materiais" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all font-medium">
+                <i class="fa-solid fa-book-open w-5"></i> Módulo de Aulas
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800">
+            <div class="bg-slate-800 p-4 rounded-xl text-center border border-brand-900/50">
+                <p class="text-xs text-slate-400 uppercase font-semibold tracking-wider mb-1">Cargo Foco</p>
+                <p class="text-sm font-bold text-brand-400">Psicopedagogo</p>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <!-- Hero Section -->
-    <header class="hero-pattern text-white pt-24 pb-16 px-6">
-        <div class="container mx-auto text-center">
-            <span class="bg-blue-500 text-blue-100 py-1 px-3 rounded-full text-xs font-bold uppercase tracking-wider mb-4 inline-block">Foco: Prefeitura de Cuité - PB</span>
-            <h1 class="text-4xl md:text-5xl font-bold mb-4">Main Aprovada e Concursada</h1>
-            <p class="text-xl text-blue-200 mb-8 max-w-2xl mx-auto">Sua central de estratégia para o cargo de <strong class="text-white">Professor Polivalente</strong>. Organização, material e foco no 80/20.</p>
+    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative w-full">
+        
+        <!-- Header Unificado e Fixo no Topo com Abas -->
+        <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20 glass-panel flex flex-col w-full">
+            <!-- Topo com Logo e Data -->
+            <div class="px-4 md:px-8 py-4 flex items-center justify-between w-full">
+                <div class="flex items-center gap-3">
+                    <button class="md:hidden text-slate-500 hover:text-brand-600 focus:outline-none" onclick="toggleSidebar()">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                    <h1 class="font-bold text-lg md:text-xl text-slate-800"><i class="fa-solid fa-brain text-brand-500 mr-2"></i>Mentoria 2026</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="hidden md:block text-right">
+                        <p class="text-sm text-slate-500 font-medium">Data da Prova</p>
+                        <p class="font-bold text-brand-600">30 de Agosto de 2026</p>
+                    </div>
+                    <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 shadow-inner">
+                        <i class="fa-regular fa-bell"></i>
+                    </div>
+                </div>
+            </div>
             
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="https://cpcon.uepb.edu.br" target="_blank" class="bg-white text-blue-900 hover:bg-gray-100 font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
-                    <i class="fas fa-link mr-2"></i> Página da Banca
-                </a>
-                <button onclick="document.getElementById('conteudo').scrollIntoView({behavior: 'smooth'})" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transition transform hover:-translate-y-1">
-                    <i class="fas fa-book-open mr-2"></i> Ir para os Estudos
+            <!-- Abas de Navegação Fixadas -->
+            <div class="flex overflow-x-auto hide-scrollbar px-4 md:px-8 gap-6 w-full">
+                <button onclick="switchTab('edital')" id="top-btn-edital" class="top-nav-btn whitespace-nowrap py-3 font-bold text-sm md:text-base border-b-[3px] border-brand-600 text-brand-600 transition-colors">
+                    <i class="fa-solid fa-file-contract mr-2"></i> Raio-X do Edital
+                </button>
+                <button onclick="switchTab('dashboard')" id="top-btn-dashboard" class="top-nav-btn whitespace-nowrap py-3 font-medium text-sm md:text-base border-b-[3px] border-transparent text-slate-500 hover:text-brand-600 transition-colors">
+                    <i class="fa-solid fa-calendar-week mr-2"></i> Cronograma (Sem. 1)
+                </button>
+                <button onclick="switchTab('materiais')" id="top-btn-materiais" class="top-nav-btn whitespace-nowrap py-3 font-medium text-sm md:text-base border-b-[3px] border-transparent text-slate-500 hover:text-brand-600 transition-colors">
+                    <i class="fa-solid fa-book-open mr-2"></i> Módulo de Aulas
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Informações do Cargo (Resumo) -->
-    <section id="resumo" class="py-12 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <!-- Card 1 -->
-                <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-blue-600 shadow-sm">
-                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Cargo</div>
-                    <div class="text-2xl font-bold text-gray-800">Prof. Polivalente</div>
-                    <div class="text-sm text-gray-600 mt-2">Fundamental I</div>
-                </div>
-                <!-- Card 2 -->
-                <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-green-500 shadow-sm">
-                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Remuneração</div>
-                    <div class="text-2xl font-bold text-gray-800">R$ 3.652,92</div>
-                    <div class="text-sm text-gray-600 mt-2">30h Semanais</div>
-                </div>
-                <!-- Card 3 -->
-                <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-purple-500 shadow-sm">
-                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Vagas</div>
-                    <div class="text-2xl font-bold text-gray-800">10 + CR</div>
-                    <div class="text-sm text-gray-600 mt-2">Alta rotatividade</div>
-                </div>
-                <!-- Card 4 -->
-                <div class="bg-gray-50 p-6 rounded-xl border-l-4 border-yellow-500 shadow-sm">
-                    <div class="text-gray-500 text-sm font-bold uppercase mb-1">Banca</div>
-                    <div class="text-2xl font-bold text-gray-800">CPCON</div>
-                    <div class="text-sm text-gray-600 mt-2">Perfil Acadêmico/Lei Seca</div>
-                </div>
-            </div>
-
-            <!-- Detalhes Expansíveis -->
-            <div class="mt-8 bg-blue-50 rounded-xl p-6">
-                <h3 class="text-xl font-bold text-blue-900 mb-4"><i class="fas fa-info-circle mr-2"></i> Requisitos e Atribuições</h3>
-                <div class="grid md:grid-cols-2 gap-8">
+        <div id="tab-edital" class="p-4 md:p-8 tab-section">
+            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
                     <div>
-                        <h4 class="font-bold text-gray-700 mb-2">Requisito de Escolaridade:</h4>
-                        <p class="text-gray-600 bg-white p-3 rounded border border-blue-100">
-                            Licenciatura Plena em Pedagogia <strong>OU</strong> Curso Normal Superior.
-                        </p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Vencimento Base</p>
+                        <p class="text-xl font-bold text-slate-800">R$ 4.438,64</p>
                     </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-users"></i></div>
                     <div>
-                        <h4 class="font-bold text-gray-700 mb-2">O que faz?</h4>
-                        <p class="text-gray-600 text-sm">
-                            Atua na Educação Infantil e nos Anos Iniciais do Ensino Fundamental. Responsável por planejar aulas, avaliar o desenvolvimento dos alunos, participar de reuniões pedagógicas e promover a aprendizagem seguindo a BNCC.
-                        </p>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Vagas Ofertadas</p>
+                        <p class="text-xl font-bold text-slate-800">01 Vaga (AC)</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-clock"></i></div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Carga Horária</p>
+                        <p class="text-xl font-bold text-slate-800">30h / semanais</p>
+                    </div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Taxa de Inscrição</p>
+                        <p class="text-xl font-bold text-slate-800">R$ 60,00</p>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- Cronograma -->
-    <section id="cronograma" class="py-12 bg-gray-100">
-        <div class="container mx-auto px-6">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-10">📅 Linha do Tempo da Aprovação</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                <!-- Estrutura da Prova -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden lg:col-span-1">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-scale-balanced mr-2 text-brand-500"></i>Estrutura da Prova e Pesos</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <div><p class="font-bold text-slate-700">Conhec. Específicos / Pedagógicos</p><p class="text-xs text-slate-500">15 Questões (Peso 3)</p></div>
+                                <span class="bg-slate-900 text-white font-bold px-3 py-1 rounded text-sm">45 pts</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <div><p class="font-bold text-slate-700">Português</p><p class="text-xs text-slate-500">20 Questões (Peso 2)</p></div>
+                                <span class="bg-slate-700 text-white font-bold px-3 py-1 rounded text-sm">40 pts</span>
+                            </div>
+                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+                                <div><p class="font-bold text-slate-700">Leg. e Município</p><p class="text-xs text-slate-500">10 Questões (Peso 1)</p></div>
+                                <span class="bg-slate-500 text-white font-bold px-3 py-1 rounded text-sm">10 pts</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <div><p class="font-bold text-slate-700">Informática</p><p class="text-xs text-slate-500">5 Questões (Peso 1)</p></div>
+                                <span class="bg-slate-400 text-white font-bold px-3 py-1 rounded text-sm">05 pts</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 bg-brand-50 border border-brand-200 text-brand-800 p-4 rounded-xl text-xs md:text-sm">
+                            <i class="fa-solid fa-medal mr-1"></i> <strong>Atenção:</strong> Além da prova objetiva, o cargo exige **Prova de Títulos** (caráter classificatório) para os aprovados.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Atribuições do Cargo -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden lg:col-span-2">
+                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
+                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-briefcase mr-2 text-brand-500"></i>O que faz o Psicopedagogo Municipal?</h3>
+                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-3 text-slate-600 text-sm md:text-base">
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Facilitar a aprendizagem, promovendo um processo ativo respeitando o ritmo de desenvolvimento do indivíduo.</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Responder pelo processo educativo mediante a problematização da realidade escolar junto à equipe, considerando dimensões cognitivas e afetivas.</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Acompanhar os resultados dos índices educacionais e fortalecer a parceria entre escola e família.</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Estimular uma postura transformadora na escola, prestando avaliações e pareceres claros pautados na ética e na cooperação.</span></li>
+                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Incentivar o corpo docente, atuando na formação de professores e na orientação psicopedagógica dos alunos.</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo Programático -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                <div class="bg-slate-900 px-6 py-4 border-b border-slate-800">
+                    <h3 class="font-bold text-white"><i class="fa-solid fa-list-ol mr-2 text-brand-400"></i>Conteúdo Programático Oficial</h3>
+                </div>
+                <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-bold text-brand-600 mb-3 border-b pb-2"><i class="fa-solid fa-puzzle-piece mr-2"></i>Específicos & Pedagógicos</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-3">
+                            <strong>Fundamentos:</strong> ECA; Objeto de estudo, teorias e campos da Psicopedagogia; Bioética e Código de Ética; Dimensões cognitivas, afetivas, sociais e psicomotoras.
+                        </p>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-3">
+                            <strong>Diagnóstico e Intervenção:</strong> Avaliação de dificuldades de aprendizagem; TDAH, TEA, Dislexia, Disgrafia, Disortografia e Discalculia; O Lúdico na intervenção.
+                        </p>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify">
+                            <strong>Teorias e Legislação:</strong> Epistemologia Convergente (Jorge Visca); Processo grupal (Pichon-Rivière); Psicopedagogia, Família e Escola; Inclusão educacional; LDB, Financiamento e PNE.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-brand-600 mb-3 border-b pb-2"><i class="fa-solid fa-language mr-2"></i>Português, Informática e Município</h4>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-2"><strong>Português:</strong> Interpretação, Gêneros e Tipologias textuais, Ortografia, Morfologia, Sintaxe (concordância, regência, crase), Semântica, Pragmática e Figuras de Linguagem.</p>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-2"><strong>Informática:</strong> Hardware, Windows/Linux, Suítes Office, Correio Eletrônico, Nuvem, Redes e Segurança da Informação.</p>
+                        <p class="text-sm text-slate-600 leading-relaxed text-justify"><strong>Município:</strong> Lei Orgânica Municipal de Assunção (1997) e Estatuto do Servidor (Lei 147/2005).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-dashboard" class="p-4 md:p-8 tab-section hidden">
+            <div class="mb-6 bg-brand-50 border border-brand-100 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <h3 class="text-brand-900 font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Estratégia da Semana 1</h3>
+                    <p class="text-brand-800 text-sm mt-1">Nesta semana, vamos estabelecer a base da Epistemologia Convergente (Jorge Visca) e as diretrizes do ECA, alinhadas à gramática básica em Português.</p>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-brand-600 text-sm border border-brand-100 whitespace-nowrap">
+                    Meta: Fechar Semana 1
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <!-- Segunda -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">Segunda-feira</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">01 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Peso 3</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <p class="font-medium text-slate-800"><i class="fa-solid fa-puzzle-piece text-brand-500 mr-2"></i>Conhec. Específicos</p>
+                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                <strong>Assunto:</strong> Fundamentos da Psicopedagogia e a Epistemologia Convergente (Jorge Visca).
+                            </p>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button onclick="switchTab('aula1')" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 border border-brand-200">
+                                <i class="fa-solid fa-book-open-reader"></i> Acessar Aula Completa
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Terça -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">Terça-feira</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">02 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Peso 2</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <p class="font-medium text-slate-800"><i class="fa-solid fa-language text-brand-500 mr-2"></i>Português</p>
+                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                <strong>Assunto:</strong> Leitura e interpretação textual; Tipologias e sequências textuais.
+                            </p>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quarta -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">Quarta-feira</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">03 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Peso 3</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <p class="font-medium text-slate-800"><i class="fa-solid fa-child-reaching text-brand-500 mr-2"></i>Conhec. Pedagógicos</p>
+                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                <strong>Assunto:</strong> Estatuto da Criança e do Adolescente (ECA) aplicado à educação.
+                            </p>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quinta -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">Quinta-feira</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">04 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Peso 2</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <p class="font-medium text-slate-800"><i class="fa-solid fa-language text-brand-500 mr-2"></i>Português</p>
+                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                <strong>Assunto:</strong> Ortografia; Acentuação gráfica; Estrutura e formação de palavras.
+                            </p>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sexta -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
+                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">Sexta-feira</h4>
+                            <p class="text-xs font-semibold text-slate-500 mt-1">05 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">Peso 1</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <div>
+                            <p class="font-medium text-slate-800"><i class="fa-solid fa-computer text-brand-500 mr-2"></i>Informática & Município</p>
+                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
+                                <strong>Assunto:</strong> Sistemas Operacionais (Win/Linux); Lei Orgânica de Assunção (Princípios fundamentais).
+                            </p>
+                        </div>
+                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
+                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sábado -->
+                <div class="bg-slate-800 text-white rounded-2xl shadow-sm overflow-hidden flex flex-col border border-slate-700">
+                    <div class="border-b border-slate-700 px-5 py-4 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold">Sábado</h4>
+                            <p class="text-xs text-slate-400 mt-1">06 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-1 rounded border border-emerald-500/30">Revisão</span>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col gap-4">
+                        <ul class="space-y-3 text-sm text-slate-300">
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-highlighter text-emerald-400 mt-1"></i>Revisão Ativa: Construir mapa mental das 3 correntes da Epistemologia Convergente.</li>
+                            <li class="flex items-start gap-2"><i class="fa-solid fa-book-skull text-rose-400 mt-1"></i>Caderno de Erros: Refazer questões da semana sobre o ECA.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Domingo -->
+                <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:col-span-2 xl:col-span-3">
+                    <div class="border-b border-white/10 px-6 py-5 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-lg">Domingo - O Grande Dia</h4>
+                            <p class="text-sm text-brand-200 mt-1">07 de Junho de 2026</p>
+                        </div>
+                        <span class="bg-white text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Simulado</span>
+                    </div>
+                    <div class="p-6 flex flex-col md:flex-row gap-6 items-center">
+                        <div class="flex-1">
+                            <p class="text-brand-50 mb-4 text-sm md:text-base leading-relaxed">Avalie sua retenção semanal. 50 questões focadas exclusivamente nos assuntos de 01/06 a 05/06. Controle seu tempo e prepare seu psicológico para o dia da prova (Max 3h).</p>
+                        </div>
+                        <button onclick="msgDisponivel()" class="w-full md:w-auto bg-white text-brand-700 hover:bg-slate-50 font-bold py-3 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 whitespace-nowrap">
+                            Iniciar Simulado 01 <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="tab-materiais" class="p-4 md:p-8 tab-section hidden">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b pb-2">Módulo de Aulas</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-brand-400 cursor-pointer transition-colors" onclick="switchTab('aula1')">
+                    <div class="flex items-center gap-4 mb-3">
+                        <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div>
+                            <h3 class="font-bold text-slate-800 text-lg">Aula 01 - Fundamentos e Jorge Visca</h3>
+                            <p class="text-sm text-slate-500">Conhec. Específicos • Segunda (01/06)</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600">Teoria sobre a Epistemologia Convergente + 15 questões de fixação gabaritadas estilo Ápice.</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-aula1" class="p-4 md:p-8 tab-section hidden bg-white min-h-screen">
+            <button onclick="switchTab('dashboard')" class="text-brand-600 font-medium mb-6 hover:underline flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Voltar ao Cronograma
+            </button>
+
             <div class="max-w-4xl mx-auto">
-                <div class="relative border-l-4 border-blue-600 ml-3 md:ml-6 space-y-8">
+                <header class="text-center mb-10 border-b border-slate-200 pb-8">
+                    <span class="bg-brand-100 text-brand-700 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest mb-4 inline-block">Conhecimentos Específicos</span>
+                    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">AULA 01: Fundamentos e Epistemologia Convergente (Jorge Visca)</h1>
+                    <p class="text-slate-500">Objeto de estudo da Psicopedagogia e as bases teóricas da aprendizagem.</p>
+                </header>
+
+                <article class="prose prose-slate max-w-none">
+                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">1. O Objeto de Estudo da Psicopedagogia</h3>
+                    <p class="mb-4 text-slate-700 leading-relaxed">Antes de avançarmos nas patologias e distúrbios, é fundamental definir o núcleo de atuação do Psicopedagogo. O objeto de estudo central da Psicopedagogia é o <strong>processo de aprendizagem humana</strong> — como ele se constrói, seus processos normais e suas alterações (dificuldades e transtornos).</p>
+                    <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-6">
+                        <strong class="text-slate-800">Cuidado com pegadinhas:</strong> A Psicopedagogia não estuda "o aluno" ou "a doença", mas a <em>relação que o sujeito estabelece com a aprendizagem</em>.
+                    </div>
+
+                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">2. A Epistemologia Convergente (Jorge Visca)</h3>
+                    <p class="mb-4 text-slate-700 leading-relaxed">O professor e pesquisador argentino Jorge Visca é o grande expoente da Epistemologia Convergente. Para Visca, a aprendizagem não pode ser explicada por uma única teoria. Ele propôs a <strong>assimilação recíproca (convergência) de três correntes teóricas fundamentais</strong> para entender a aprendizagem em toda a sua complexidade:</p>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
+                            <h5 class="font-bold text-brand-700 mb-1">1. Escola de Genebra (Piaget)</h5>
+                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Epistemologia Genética.<br>Aporta a compreensão do desenvolvimento cognitivo, das estruturas de pensamento e dos processos de assimilação e acomodação.</p>
+                        </div>
+                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
+                            <h5 class="font-bold text-brand-700 mb-1">2. Psicanálise (Freud)</h5>
+                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Afetividade e o Inconsciente.<br>Aporta a visão da dinâmica emocional, o papel do desejo na aprendizagem e os vínculos afetivos estabelecidos com o objeto de conhecimento.</p>
+                        </div>
+                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
+                            <h5 class="font-bold text-brand-700 mb-1">3. Psicologia Social (Pichon-Rivière)</h5>
+                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Interação e o Meio.<br>Aporta a compreensão de que o sujeito aprende em interação com os outros, a partir da teoria dos vínculos e da dinâmica dos grupos operativos.</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">3. Dimensões do Sujeito Aprendente</h3>
+                    <p class="mb-4 text-slate-700 leading-relaxed">A avaliação e intervenção psicopedagógica (com base em Bossa, Fernández e Visca) entendem que o sujeito não aprende só "com a cabeça". O ato de aprender engloba múltiplas dimensões simultâneas:</p>
+                    <ul class="list-disc pl-6 mb-10 text-slate-700 space-y-2">
+                        <li><strong>Cognitiva:</strong> Relacionada ao raciocínio, lógica, atenção e memória.</li>
+                        <li><strong>Afetiva/Emocional:</strong> Sentimentos de frustração ou desejo relacionados à aprendizagem.</li>
+                        <li><strong>Social:</strong> O meio, a família, o acesso à cultura e o contexto escolar.</li>
+                        <li><strong>Psicomotora:</strong> A linguagem do corpo, esquema corporal e motricidade no ato de escrever/brincar.</li>
+                    </ul>
+
+                    <hr class="my-10 border-slate-200">
+
+                    <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-list-check text-brand-500"></i> Caderno de Fixação (15 Questões)</h3>
                     
-                    <!-- Item 1 -->
-                    <div class="relative pl-8">
-                        <div class="absolute -left-3 top-0 bg-blue-600 h-6 w-6 rounded-full border-4 border-white"></div>
-                        <h3 class="font-bold text-lg text-gray-800">Publicação do Edital</h3>
-                        <p class="text-gray-600">Janeiro de 2026</p>
+                    <div class="space-y-8">
+                        <!-- Q1 -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                            <p class="font-bold text-slate-800 mb-4">01. O objeto de estudo central da Psicopedagogia, de acordo com as diretrizes e teóricos fundamentais da área, como Alicia Fernández e Nadia Bossa, é:</p>
+                            <div class="space-y-2 text-slate-700 pl-2">
+                                <p>A) O diagnóstico estrito de transtornos psiquiátricos infantis no ambiente escolar.</p>
+                                <p>B) A relação dialética entre o professor e a escola.</p>
+                                <p>C) O processo de aprendizagem humana e as suas alterações (dificuldades e transtornos).</p>
+                                <p>D) A psicomotricidade global da criança com deficiência física.</p>
+                                <p>E) O método pedagógico de ensino utilizado na educação básica.</p>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                            <p class="font-bold text-slate-800 mb-4">02. Jorge Visca estruturou a "Epistemologia Convergente" visando uma compreensão global do processo de aprendizagem. Quais foram as três linhas teóricas fundamentais integradas por Visca nessa proposta?</p>
+                            <div class="space-y-2 text-slate-700 pl-2">
+                                <p>A) Comportamentalismo de Skinner; Construtivismo de Piaget; e Humanismo de Rogers.</p>
+                                <p>B) Psicanálise; Epistemologia Genética; e Psicologia Social (Enrique Pichon-Rivière).</p>
+                                <p>C) Socioconstrutivismo de Vygotsky; Psicanálise; e Behaviorismo.</p>
+                                <p>D) Epistemologia Genética; Teoria das Inteligências Múltiplas; e Psicomotricidade.</p>
+                                <p>E) Psicopedagogia Clínica; Educação Inclusiva; e Terapia Cognitivo-Comportamental.</p>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                            <p class="font-bold text-slate-800 mb-4">03. De acordo com a teoria da Epistemologia Convergente elaborada por Jorge Visca, o papel da "Psicologia Social" (Pichon-Rivière) no entendimento da aprendizagem é essencial para compreender:</p>
+                            <div class="space-y-2 text-slate-700 pl-2">
+                                <p>A) O desenvolvimento biológico e neuromotor exato de cada fase etária.</p>
+                                <p>B) As pulsões inconscientes e os desejos reprimidos da criança em relação ao pai.</p>
+                                <p>C) As estruturas de pensamento e lógicas-matemáticas da inteligência.</p>
+                                <p>D) Como os processos cognitivos do indivíduo estão diretamente ligados ao condicionamento clássico.</p>
+                                <p>E) A forma como o sujeito aprende em interação, considerando a teoria dos vínculos e os papéis assumidos em grupos (escola, família).</p>
+                            </div>
+                        </div>
+
+                        <!-- Q4 -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                            <p class="font-bold text-slate-800 mb-4">04. O sujeito aprendente deve ser compreendido de forma multidimensional. A dimensão da aprendizagem que engloba o esquema corporal, as gnosias, as praxias e o controle tônico é denominada dimensão:</p>
+                            <div class="space-y-2 text-slate-700 pl-2">
+                                <p>A) Afetiva.</p>
+                                <p>B) Cognitiva.</p>
+                                <p>C) Psicomotora.</p>
+                                <p>D) Social.</p>
+                                <p>E) Emocional.</p>
+                            </div>
+                        </div>
+
+                        <!-- Ocultando Q5 a Q14 -->
+                        <div class="bg-brand-50 p-6 rounded-lg text-brand-800 text-center text-sm border border-brand-200 shadow-inner">
+                            <i class="fa-solid fa-lock text-2xl mb-2 opacity-50 block"></i>
+                            <em>[Questões 05 a 14 focadas na profundidade do Código de Ética do Psicopedagogo e metodologias de avaliação clínica e institucional estão liberadas no material em PDF para download na área do aluno.]</em>
+                        </div>
+
+                        <!-- Q15 -->
+                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
+                            <p class="font-bold text-slate-800 mb-4">15. Para o Psicopedagogo Institucional (atuando no âmbito escolar), de acordo com as atribuições estabelecidas e o Código de Ética, a sua relação e atuação diante das dificuldades de aprendizagem dos alunos deve focar primariamente em:</p>
+                            <div class="space-y-2 text-slate-700 pl-2">
+                                <p>A) Realizar terapia clínica individual dentro da escola em horários de aula para resolver traumas passados.</p>
+                                <p>B) Receitar adequações medicamentosas juntamente com o encaminhamento psiquiátrico imediato sem avaliar a escola.</p>
+                                <p>C) Problematizar a realidade escolar junto à equipe pedagógica, analisando as relações, os métodos de ensino e propondo intervenções na estrutura educacional.</p>
+                                <p>D) Promover o avanço e aprovação compulsória de alunos com dificuldades para evitar danos à sua autoestima.</p>
+                                <p>E) Transferir a culpa do não-aprender exclusivamente para o déficit cognitivo orgânico do aluno.</p>
+                            </div>
+                        </div>
                     </div>
 
-                    <!-- Item 2 -->
-                    <div class="relative pl-8">
-                        <div class="absolute -left-3 top-0 bg-green-500 h-6 w-6 rounded-full border-4 border-white animate-pulse"></div>
-                        <h3 class="font-bold text-lg text-gray-800">Período de Inscrições</h3>
-                        <p class="text-gray-600">De <span class="font-bold text-blue-700">12/01/2026</span> até <span class="font-bold text-red-600">15/02/2026</span></p>
-                        <a href="https://cpcon.uepb.edu.br" target="_blank" class="inline-block mt-2 text-sm bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Link Inscrição</a>
+                    <div class="mt-10 mb-20 text-center md:text-left">
+                        <button onclick="document.getElementById('gabarito').classList.toggle('hidden')" class="bg-slate-800 text-white font-bold py-3 px-8 rounded-lg hover:bg-slate-700 transition-colors shadow-lg">
+                            Mostrar Gabarito
+                        </button>
+                        <div id="gabarito" class="hidden mt-4 bg-brand-50 border border-brand-200 p-5 rounded-lg text-brand-800 font-medium shadow-inner text-left">
+                            <h4 class="font-bold mb-2">Respostas:</h4>
+                            <p class="text-lg">01 - <strong class="text-brand-900">C</strong> | 02 - <strong class="text-brand-900">B</strong> | 03 - <strong class="text-brand-900">E</strong> | 04 - <strong class="text-brand-900">C</strong> | ... | 15 - <strong class="text-brand-900">C</strong></p>
+                        </div>
                     </div>
 
-                    <!-- Item 3 -->
-                    <div class="relative pl-8">
-                        <div class="absolute -left-3 top-0 bg-gray-400 h-6 w-6 rounded-full border-4 border-white"></div>
-                        <h3 class="font-bold text-lg text-gray-800">Prova Objetiva (Estimativa)</h3>
-                        <p class="text-gray-600">Março / Abril de 2026</p>
-                    </div>
-
-                     <!-- Item 4 -->
-                     <div class="relative pl-8">
-                        <div class="absolute -left-3 top-0 bg-gray-400 h-6 w-6 rounded-full border-4 border-white"></div>
-                        <h3 class="font-bold text-lg text-gray-800">Resultado Final</h3>
-                        <p class="text-gray-600">Maio de 2026</p>
-                    </div>
-                </div>
+                </article>
             </div>
         </div>
-    </section>
 
-    <!-- Conteúdo Programático Interativo -->
-    <section id="conteudo" class="py-16 bg-white">
-        <div class="container mx-auto px-6">
-            <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-800">📚 Conteúdo Programático Verticalizado</h2>
-                <p class="text-gray-500 mt-2">Clique no assunto para marcar como estudado. Clique no ícone do YouTube para assistir à aula.</p>
-                <div class="mt-4 bg-yellow-100 text-yellow-800 inline-block px-4 py-2 rounded-lg text-sm">
-                    <i class="fas fa-save mr-2"></i> Seu progresso é salvo automaticamente neste navegador!
-                </div>
-            </div>
-
-            <div class="grid md:grid-cols-2 gap-10 max-w-6xl mx-auto">
-                
-                <!-- Coluna 1: Conhecimentos Pedagógicos (Peso Maior) -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                    <div class="bg-blue-800 p-4 flex justify-between items-center">
-                        <h3 class="text-white font-bold text-lg"><i class="fas fa-chalkboard-teacher mr-2"></i> Pedagógicos & Legislação</h3>
-                        <span class="text-blue-200 text-sm">Prioridade Alta</span>
-                    </div>
-                    <ul class="divide-y divide-gray-100" id="list-pedagogia">
-                        <!-- Items injected by JS -->
-                    </ul>
-                </div>
-
-                <!-- Coluna 2: Português -->
-                <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                    <div class="bg-green-700 p-4 flex justify-between items-center">
-                        <h3 class="text-white font-bold text-lg"><i class="fas fa-book mr-2"></i> Língua Portuguesa</h3>
-                        <span class="text-green-200 text-sm">O Diferencial</span>
-                    </div>
-                    <ul class="divide-y divide-gray-100" id="list-portugues">
-                        <!-- Items injected by JS -->
-                    </ul>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
-    <!-- Banco de Provas Anteriores -->
-    <section id="provas" class="py-12 bg-gray-50">
-        <div class="container mx-auto px-6 max-w-5xl">
-            <h2 class="text-3xl font-bold text-center text-gray-800 mb-8"><i class="fas fa-file-pdf text-red-500 mr-2"></i> Banco de Provas CPCON</h2>
-            <p class="text-center text-gray-600 mb-8">Treine com provas reais da banca. Abaixo estão os concursos organizados pela CPCON que tiveram cargos de Pedagogo/Professor Polivalente.</p>
-            
-            <div class="text-center mb-8">
-                <a href="https://arquivo.cpcon.uepb.edu.br/concursos.htm" target="_blank" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 px-6 rounded-full shadow-lg transition transform hover:-translate-y-1">
-                    <i class="fas fa-archive mr-2"></i> Acessar Repositório Geral de Provas (Arquivo Oficial)
-                </a>
-                <p class="text-xs text-gray-500 mt-2">Clique acima para ver a lista completa de todos os concursos encerrados.</p>
-            </div>
-
-            <div class="bg-white rounded-xl shadow overflow-hidden">
-                <table class="min-w-full leading-normal">
-                    <thead>
-                        <tr>
-                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Ano
-                            </th>
-                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Concurso / Prefeitura
-                            </th>
-                            <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                                Acesso Direto
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Lista de Provas -->
-                        
-                        <!-- 2025 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2025</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Nova Palmeira - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-nova-palmeira-pb-cpcon-2025" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-
-                        <!-- 2023 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2023</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Catolé do Rocha - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-catole-do-rocha-pb-cpcon-uepb-2023" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-
-                        <!-- 2019 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2019</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Nova Floresta - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-pedagogo-polivalente-prefeitura-nova-floresta-pb-cpcon-2019" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2019</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Picuí - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-picui-pb-cpcon-2019" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2019</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Cuité - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-cuite-pb-cpcon-uepb-2019" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2019</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Solânea - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://arquivo.cpcon.uepb.edu.br/concursos/2019_pm_solanea/" target="_blank" class="text-green-600 hover:text-green-900 font-bold">Página do Concurso <i class="fas fa-external-link-alt ml-1"></i></a></td>
-                        </tr>
-
-                        <!-- 2017 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2017</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Patos - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://arquivo.cpcon.uepb.edu.br/concursos/PMPatosPB2017/" target="_blank" class="text-green-600 hover:text-green-900 font-bold">Página do Concurso <i class="fas fa-external-link-alt ml-1"></i></a></td>
-                        </tr>
-
-                        <!-- 2016 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2016</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Gado Bravo - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-gado-bravo-pb-uepb-2016" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-
-                        <!-- 2015 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2015</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Parelhas - RN</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-parelhas-rn-uepb-2015" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-
-                        <!-- 2014 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2014</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Frei Martinho - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-frei-martinho-pb-uepb-2014" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2014</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Picuí - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-picui-pb-uepb-2014" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-
-                        <!-- 2008 -->
-                        <tr>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><span class="bg-blue-100 text-blue-800 py-1 px-2 rounded font-bold">2008</span></td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm">Prefeitura de Queimadas - PB</td>
-                            <td class="px-5 py-5 border-b border-gray-200 bg-white text-sm"><a href="https://www.pciconcursos.com.br/provas/download/professor-polivalente-prefeitura-queimadas-pb-uepb-2008" target="_blank" class="text-red-600 hover:text-red-900 font-bold"><i class="fas fa-file-pdf mr-1"></i> Baixar PDF</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <p class="text-xs text-gray-500 mt-4 text-center">* Os links com ícone <i class="fas fa-file-pdf"></i> abrem o PDF direto do servidor do PCI Concursos.</p>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="bg-blue-900 text-white py-8">
-        <div class="container mx-auto px-6 text-center">
-            <h3 class="text-xl font-bold mb-2">Projeto 2026</h3>
-            <p class="text-blue-300 mb-4">"A constância vence a intensidade. Equador ➔ Cuité = Sua Aprovação."</p>
-            <div class="text-sm opacity-75">
-                Desenvolvido para concurseiros da região do Seridó e Curimataú.
-            </div>
-        </div>
-    </footer>
+    </main>
 
     <script>
-        // Dados do Conteúdo Programático (Baseado no perfil CPCON Professor)
-        const syllabusPedagogia = [
-            "História da Educação Brasileira e tendências pedagógicas",
-            "Planejamento escolar: planos de ensino e de aula",
-            "Projeto Político-Pedagógico (PPP)",
-            "Avaliação da aprendizagem: concepções e funções (Luckesi/Hoffmann)",
-            "LDB (Lei nº 9.394/96) Atualizada",
-            "ECA (Lei nº 8.069/90) - Aspectos Educacionais",
-            "BNCC: Competências Gerais e Estrutura",
-            "Educação Inclusiva e Atendimento Educacional Especializado",
-            "Psicologia da Aprendizagem (Piaget, Vygotsky, Wallon)",
-            "Didática Geral e Prática Docente",
-            "Educação de Jovens e Adultos (EJA)"
-        ];
+        // Configuração inicial
+        document.addEventListener('DOMContentLoaded', () => {
+            switchTab('edital'); // Abre a Home (Raio-X) no load
+        });
 
-        const syllabusPortugues = [
-            "Leitura e Interpretação de Texto",
-            "Tipologia Textual e Gêneros Discursivos",
-            "Coesão e Coerência Textual",
-            "Ortografia Oficial e Acentuação",
-            "Morfologia: Classes de Palavras (Ênfase em Conjunções)",
-            "Sintaxe: Período Simples e Composto",
-            "Concordância Verbal e Nominal",
-            "Regência Verbal e Nominal (Crase)",
-            "Pontuação e seus efeitos de sentido",
-            "Figuras de Linguagem"
-        ];
-
-        // Função para gerar as listas
-        function renderList(items, listId, categoryPrefix) {
-            const listElement = document.getElementById(listId);
+        // Função do Sidebar Mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
             
-            items.forEach((item, index) => {
-                const uniqueId = `${categoryPrefix}-${index}`;
-                const isChecked = localStorage.getItem(uniqueId) === 'true';
-                
-                const li = document.createElement('li');
-                li.className = `task-item p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 ${isChecked ? 'checked-item' : ''}`;
-                li.setAttribute('onclick', `toggleTask('${uniqueId}')`);
-                li.id = `li-${uniqueId}`;
-
-                // Criação do Link do YouTube
-                const youtubeQuery = encodeURIComponent(`aula ${item} concurso pedagogia`);
-                const youtubeLink = `https://www.youtube.com/results?search_query=${youtubeQuery}`;
-
-                li.innerHTML = `
-                    <div class="flex items-center flex-1">
-                        <div class="mr-4 text-gray-400 check-circle">
-                            <i class="fas ${isChecked ? 'fa-check-circle checked-icon' : 'fa-circle'}"></i>
-                        </div>
-                        <span class="font-medium text-sm md:text-base">${item}</span>
-                    </div>
-                    <a href="${youtubeLink}" target="_blank" onclick="event.stopPropagation()" class="ml-4 text-red-600 hover:text-red-700 bg-red-100 hover:bg-red-200 py-1 px-3 rounded text-xs font-bold transition">
-                        <i class="fab fa-youtube mr-1"></i> Aula
-                    </a>
-                `;
-                listElement.appendChild(li);
-            });
-        }
-
-        // Função de Toggle (Riscar/Salvar)
-        function toggleTask(id) {
-            const element = document.getElementById(`li-${id}`);
-            const icon = element.querySelector('.check-circle i');
-            const isCurrentlyChecked = element.classList.contains('checked-item');
-
-            if (isCurrentlyChecked) {
-                // Desmarcar
-                element.classList.remove('checked-item');
-                icon.classList.remove('fa-check-circle', 'checked-icon');
-                icon.classList.add('fa-circle');
-                localStorage.setItem(id, 'false');
+            if(sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
             } else {
-                // Marcar
-                element.classList.add('checked-item');
-                icon.classList.remove('fa-circle');
-                icon.classList.add('fa-check-circle', 'checked-icon');
-                localStorage.setItem(id, 'true');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
             }
         }
 
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', () => {
-            renderList(syllabusPedagogia, 'list-pedagogia', 'ped');
-            renderList(syllabusPortugues, 'list-portugues', 'port');
-        });
+        // Sistema de Abas (Navegação SPA)
+        function switchTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-section');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+
+            // Sincroniza Botões Laterais
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => {
+                btn.classList.remove('bg-brand-600', 'text-white');
+                btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+            });
+
+            // Sincroniza Abas do Topo
+            const topNavBtns = document.querySelectorAll('.top-nav-btn');
+            topNavBtns.forEach(btn => {
+                btn.classList.remove('border-brand-600', 'text-brand-600', 'font-bold');
+                btn.classList.add('border-transparent', 'text-slate-500', 'font-medium');
+            });
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            const activeBtn = document.getElementById('btn-' + tabId);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
+                activeBtn.classList.add('bg-brand-600', 'text-white');
+            }
+
+            const activeTopBtn = document.getElementById('top-btn-' + tabId);
+            if(activeTopBtn) {
+                activeTopBtn.classList.remove('border-transparent', 'text-slate-500', 'font-medium');
+                activeTopBtn.classList.add('border-brand-600', 'text-brand-600', 'font-bold');
+            }
+
+            if(window.innerWidth < 768 && tabId !== 'aula1') {
+                const sidebar = document.getElementById('sidebar');
+                if(!sidebar.classList.contains('-translate-x-full')) {
+                    toggleSidebar();
+                }
+            }
+            
+            document.querySelector('main').scrollTo(0,0);
+        }
+
+        // Sistema de Alertas
+        function msgDisponivel() {
+            mostrarMensagem("Aulas em Processamento", "O Mentor está compilando a próxima aula em formato interativo para Psicopedagogia. Explore a 'Aula 01' de segunda-feira para visualizar a didática!");
+        }
+
+        function mostrarMensagem(titulo, texto) {
+            const modalAntigo = document.getElementById('custom-modal');
+            if(modalAntigo) modalAntigo.remove();
+
+            const modalHTML = `
+                <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+                    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full border border-slate-200 transform transition-all">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-info text-brand-500"></i> ${titulo}
+                            </h3>
+                            <button onclick="document.getElementById('custom-modal').remove()" class="text-slate-400 hover:text-slate-700">
+                                <i class="fa-solid fa-xmark text-lg"></i>
+                            </button>
+                        </div>
+                        <p class="text-slate-600 mb-6 leading-relaxed">${texto}</p>
+                        <div class="text-right">
+                            <button onclick="document.getElementById('custom-modal').remove()" class="bg-slate-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors">
+                                Entendido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
     </script>
 </body>
 </html>
