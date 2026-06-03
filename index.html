@@ -3,625 +3,1342 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentoria 2026 | Psicopedagogo</title>
+    <title>PsicoIA - Mentor Estratégico para Concursos</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            50: '#f5f3ff', 100: '#ede9fe', 400: '#a78bfa', 500: '#8b5cf6',
-                            600: '#7c3aed', 700: '#6d28d9', 900: '#4c1d95',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
+        .drop-cap::first-letter { font-size: 4rem; font-weight: 900; float: left; margin-top: 0.1rem; margin-right: 0.75rem; line-height: 0.8; color: #1e3a8a; text-shadow: 2px 2px 0px rgba(191, 219, 254, 0.5); }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .tab-btn { transition: all 0.3s ease; }
+        .tab-btn.active { border-bottom-width: 4px; border-color: #1e3a8a; color: #1e3a8a; font-weight: 700; }
         
-        /* Oculta a barra de rolagem horizontal nas abas superiores, mantendo o scroll no celular */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .alt-container { transition: all 0.2s ease; }
+        .alt-container.eliminated { text-decoration: line-through; opacity: 0.4; filter: grayscale(100%); }
+        .alt-container.eliminated .tesoura-icon { color: #ef4444; transform: scale(1.1); }
+        .alt-container.correct-answer { background-color: #ecfdf5 !important; border-color: #10b981 !important; color: #064e3b !important; text-decoration: none !important; opacity: 1 !important; }
+        .alt-container.wrong-answer { background-color: #fef2f2 !important; border-color: #ef4444 !important; color: #7f1d1d !important; text-decoration: none !important; opacity: 1 !important; }
+        .alt-container.locked { pointer-events: none; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .keyword { background-color: #fef08a; padding: 0 4px; border-radius: 4px; font-weight: 700; color: #1e3a8a; }
+        .banca-alert { background: #fffbeb; border: 2px dashed #fbbf24; border-left: 6px solid #fbbf24; }
+        .theory-box { background: #f0fdf4; border-left: 4px solid #10b981; padding: 1rem; border-radius: 0 0.5rem 0.5rem 0; margin-bottom: 1.5rem; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 h-screen overflow-hidden flex">
+<body class="antialiased min-h-screen flex flex-col">
 
-    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-20 hidden md:hidden" onclick="toggleSidebar()"></div>
-
-    <aside id="sidebar" class="w-72 bg-slate-900 text-white flex flex-col shadow-2xl z-30 fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 sidebar-transition">
-        <div class="p-6 border-b border-slate-800 text-center relative">
-            <button class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-white" onclick="toggleSidebar()">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <div class="w-16 h-16 bg-brand-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-2xl">
-                <i class="fa-solid fa-brain"></i>
-            </div>
-            <h1 class="text-xl font-bold tracking-tight">Mentoria 2026</h1>
-            <p class="text-slate-400 text-sm mt-1">Assunção/PB</p>
-        </div>
-
-        <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-            <button onclick="switchTab('edital')" id="btn-edital" class="nav-btn w-full flex items-center gap-3 px-4 py-3 bg-brand-600 text-white rounded-xl transition-all font-medium">
-                <i class="fa-solid fa-file-contract w-5"></i> Raio-X do Edital
-            </button>
-            <button onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all font-medium">
-                <i class="fa-solid fa-calendar-week w-5"></i> Cronograma (Sem. 1)
-            </button>
-            <button onclick="switchTab('materiais')" id="btn-materiais" class="nav-btn w-full flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-xl transition-all font-medium">
-                <i class="fa-solid fa-book-open w-5"></i> Módulo de Aulas
-            </button>
-        </nav>
-
-        <div class="p-4 border-t border-slate-800">
-            <div class="bg-slate-800 p-4 rounded-xl text-center border border-brand-900/50">
-                <p class="text-xs text-slate-400 uppercase font-semibold tracking-wider mb-1">Cargo Foco</p>
-                <p class="text-sm font-bold text-brand-400">Psicopedagogo</p>
-            </div>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col h-screen overflow-y-auto relative w-full">
-        
-        <!-- Header Unificado e Fixo no Topo com Abas -->
-        <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20 glass-panel flex flex-col w-full">
-            <!-- Topo com Logo e Data -->
-            <div class="px-4 md:px-8 py-4 flex items-center justify-between w-full">
+    <header class="bg-indigo-900 text-white shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
                 <div class="flex items-center gap-3">
-                    <button class="md:hidden text-slate-500 hover:text-brand-600 focus:outline-none" onclick="toggleSidebar()">
-                        <i class="fa-solid fa-bars text-xl"></i>
-                    </button>
-                    <h1 class="font-bold text-lg md:text-xl text-slate-800"><i class="fa-solid fa-brain text-brand-500 mr-2"></i>Mentoria 2026</h1>
+                    <div class="bg-white/10 p-3 rounded-xl backdrop-blur-md border border-white/20">
+                        <i class="ph-bold ph-brain text-3xl text-blue-300"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight leading-none">Psico<span class="text-blue-400">IA</span></h1>
+                        <p class="text-xs text-indigo-200 font-medium tracking-widest uppercase">Mentor Estratégico de Elite</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-4">
-                    <div class="hidden md:block text-right">
-                        <p class="text-sm text-slate-500 font-medium">Data da Prova</p>
-                        <p class="font-bold text-brand-600">30 de Agosto de 2026</p>
-                    </div>
-                    <div class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-600 shadow-inner">
-                        <i class="fa-regular fa-bell"></i>
-                    </div>
+                <div class="hidden md:flex items-center gap-2 bg-indigo-800/50 px-4 py-2 rounded-full border border-indigo-700">
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <span class="text-sm font-semibold text-indigo-100">Assunção/PB - Banca Ápice</span>
                 </div>
             </div>
             
-            <!-- Abas de Navegação Fixadas -->
-            <div class="flex overflow-x-auto hide-scrollbar px-4 md:px-8 gap-6 w-full">
-                <button onclick="switchTab('edital')" id="top-btn-edital" class="top-nav-btn whitespace-nowrap py-3 font-bold text-sm md:text-base border-b-[3px] border-brand-600 text-brand-600 transition-colors">
-                    <i class="fa-solid fa-file-contract mr-2"></i> Raio-X do Edital
+            <nav class="flex space-x-8 mt-2 overflow-x-auto no-scrollbar">
+                <button onclick="switchTab('raio-x')" class="tab-btn active pb-3 px-2 text-indigo-100 hover:text-white font-medium whitespace-nowrap text-lg flex items-center gap-2" id="tab-raio-x">
+                    <i class="ph-bold ph-scan"></i> Raio-X do Edital
                 </button>
-                <button onclick="switchTab('dashboard')" id="top-btn-dashboard" class="top-nav-btn whitespace-nowrap py-3 font-medium text-sm md:text-base border-b-[3px] border-transparent text-slate-500 hover:text-brand-600 transition-colors">
-                    <i class="fa-solid fa-calendar-week mr-2"></i> Cronograma (Sem. 1)
+                <button onclick="switchTab('cronograma')" class="tab-btn pb-3 px-2 text-indigo-300 hover:text-white font-medium whitespace-nowrap text-lg flex items-center gap-2" id="tab-cronograma">
+                    <i class="ph-bold ph-calendar-check"></i> Cronograma & Aulas
                 </button>
-                <button onclick="switchTab('materiais')" id="top-btn-materiais" class="top-nav-btn whitespace-nowrap py-3 font-medium text-sm md:text-base border-b-[3px] border-transparent text-slate-500 hover:text-brand-600 transition-colors">
-                    <i class="fa-solid fa-book-open mr-2"></i> Módulo de Aulas
-                </button>
-            </div>
-        </header>
-
-        <div id="tab-edital" class="p-4 md:p-8 tab-section">
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Vencimento Base</p>
-                        <p class="text-xl font-bold text-slate-800">R$ 4.438,64</p>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-users"></i></div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Vagas Ofertadas</p>
-                        <p class="text-xl font-bold text-slate-800">01 Vaga (AC)</p>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-clock"></i></div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Carga Horária</p>
-                        <p class="text-xl font-bold text-slate-800">30h / semanais</p>
-                    </div>
-                </div>
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xl shrink-0"><i class="fa-solid fa-file-invoice-dollar"></i></div>
-                    <div>
-                        <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Taxa de Inscrição</p>
-                        <p class="text-xl font-bold text-slate-800">R$ 60,00</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-                <!-- Estrutura da Prova -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden lg:col-span-1">
-                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
-                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-scale-balanced mr-2 text-brand-500"></i>Estrutura da Prova e Pesos</h3>
-                    </div>
-                    <div class="p-6">
-                        <div class="space-y-4">
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <div><p class="font-bold text-slate-700">Conhec. Específicos / Pedagógicos</p><p class="text-xs text-slate-500">15 Questões (Peso 3)</p></div>
-                                <span class="bg-slate-900 text-white font-bold px-3 py-1 rounded text-sm">45 pts</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <div><p class="font-bold text-slate-700">Português</p><p class="text-xs text-slate-500">20 Questões (Peso 2)</p></div>
-                                <span class="bg-slate-700 text-white font-bold px-3 py-1 rounded text-sm">40 pts</span>
-                            </div>
-                            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
-                                <div><p class="font-bold text-slate-700">Leg. e Município</p><p class="text-xs text-slate-500">10 Questões (Peso 1)</p></div>
-                                <span class="bg-slate-500 text-white font-bold px-3 py-1 rounded text-sm">10 pts</span>
-                            </div>
-                            <div class="flex justify-between items-center">
-                                <div><p class="font-bold text-slate-700">Informática</p><p class="text-xs text-slate-500">5 Questões (Peso 1)</p></div>
-                                <span class="bg-slate-400 text-white font-bold px-3 py-1 rounded text-sm">05 pts</span>
-                            </div>
-                        </div>
-                        <div class="mt-6 bg-brand-50 border border-brand-200 text-brand-800 p-4 rounded-xl text-xs md:text-sm">
-                            <i class="fa-solid fa-medal mr-1"></i> <strong>Atenção:</strong> Além da prova objetiva, o cargo exige **Prova de Títulos** (caráter classificatório) para os aprovados.
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Atribuições do Cargo -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden lg:col-span-2">
-                    <div class="bg-slate-50 px-6 py-4 border-b border-slate-200">
-                        <h3 class="font-bold text-slate-800"><i class="fa-solid fa-briefcase mr-2 text-brand-500"></i>O que faz o Psicopedagogo Municipal?</h3>
-                    </div>
-                    <div class="p-6">
-                        <ul class="space-y-3 text-slate-600 text-sm md:text-base">
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Facilitar a aprendizagem, promovendo um processo ativo respeitando o ritmo de desenvolvimento do indivíduo.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Responder pelo processo educativo mediante a problematização da realidade escolar junto à equipe, considerando dimensões cognitivas e afetivas.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Acompanhar os resultados dos índices educacionais e fortalecer a parceria entre escola e família.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Estimular uma postura transformadora na escola, prestando avaliações e pareceres claros pautados na ética e na cooperação.</span></li>
-                            <li class="flex items-start gap-3"><i class="fa-solid fa-check text-brand-500 mt-1"></i><span>Incentivar o corpo docente, atuando na formação de professores e na orientação psicopedagógica dos alunos.</span></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Conteúdo Programático -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden mb-8">
-                <div class="bg-slate-900 px-6 py-4 border-b border-slate-800">
-                    <h3 class="font-bold text-white"><i class="fa-solid fa-list-ol mr-2 text-brand-400"></i>Conteúdo Programático Oficial</h3>
-                </div>
-                <div class="p-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div>
-                        <h4 class="font-bold text-brand-600 mb-3 border-b pb-2"><i class="fa-solid fa-puzzle-piece mr-2"></i>Específicos & Pedagógicos</h4>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-3">
-                            <strong>Fundamentos:</strong> ECA; Objeto de estudo, teorias e campos da Psicopedagogia; Bioética e Código de Ética; Dimensões cognitivas, afetivas, sociais e psicomotoras.
-                        </p>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-3">
-                            <strong>Diagnóstico e Intervenção:</strong> Avaliação de dificuldades de aprendizagem; TDAH, TEA, Dislexia, Disgrafia, Disortografia e Discalculia; O Lúdico na intervenção.
-                        </p>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify">
-                            <strong>Teorias e Legislação:</strong> Epistemologia Convergente (Jorge Visca); Processo grupal (Pichon-Rivière); Psicopedagogia, Família e Escola; Inclusão educacional; LDB, Financiamento e PNE.
-                        </p>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-brand-600 mb-3 border-b pb-2"><i class="fa-solid fa-language mr-2"></i>Português, Informática e Município</h4>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-2"><strong>Português:</strong> Interpretação, Gêneros e Tipologias textuais, Ortografia, Morfologia, Sintaxe (concordância, regência, crase), Semântica, Pragmática e Figuras de Linguagem.</p>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify mb-2"><strong>Informática:</strong> Hardware, Windows/Linux, Suítes Office, Correio Eletrônico, Nuvem, Redes e Segurança da Informação.</p>
-                        <p class="text-sm text-slate-600 leading-relaxed text-justify"><strong>Município:</strong> Lei Orgânica Municipal de Assunção (1997) e Estatuto do Servidor (Lei 147/2005).</p>
-                    </div>
-                </div>
-            </div>
+            </nav>
         </div>
+    </header>
 
-        <div id="tab-dashboard" class="p-4 md:p-8 tab-section hidden">
-            <div class="mb-6 bg-brand-50 border border-brand-100 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <section id="view-raio-x" class="view-section fade-in"></section>
+
+        <section id="view-cronograma" class="view-section hidden fade-in">
+            <div class="mb-8 flex items-center justify-between bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                 <div>
-                    <h3 class="text-brand-900 font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-bullseye"></i> Estratégia da Semana 1</h3>
-                    <p class="text-brand-800 text-sm mt-1">Nesta semana, vamos estabelecer a base da Epistemologia Convergente (Jorge Visca) e as diretrizes do ECA, alinhadas à gramática básica em Português.</p>
+                    <h2 class="text-3xl font-black text-slate-800 tracking-tight">Rota da Aprovação (8 Dias)</h2>
+                    <p class="text-slate-500 mt-1 text-lg">Seu cronograma reorganizado. 7 Dias de Teoria + 1 Dia de Revisão/Simulado.</p>
                 </div>
-                <div class="bg-white px-4 py-2 rounded-lg shadow-sm font-bold text-brand-600 text-sm border border-brand-100 whitespace-nowrap">
-                    Meta: Fechar Semana 1
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                <!-- Segunda -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-800">Segunda-feira</h4>
-                            <p class="text-xs font-semibold text-slate-500 mt-1">01 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Peso 3</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                            <p class="font-medium text-slate-800"><i class="fa-solid fa-puzzle-piece text-brand-500 mr-2"></i>Conhec. Específicos</p>
-                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                <strong>Assunto:</strong> Fundamentos da Psicopedagogia e a Epistemologia Convergente (Jorge Visca).
-                            </p>
-                        </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <button onclick="switchTab('aula1')" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors flex items-center justify-center gap-2 border border-brand-200">
-                                <i class="fa-solid fa-book-open-reader"></i> Acessar Aula Completa
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Terça -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-800">Terça-feira</h4>
-                            <p class="text-xs font-semibold text-slate-500 mt-1">02 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Peso 2</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                            <p class="font-medium text-slate-800"><i class="fa-solid fa-language text-brand-500 mr-2"></i>Português</p>
-                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                <strong>Assunto:</strong> Leitura e interpretação textual; Tipologias e sequências textuais.
-                            </p>
-                        </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quarta -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-800">Quarta-feira</h4>
-                            <p class="text-xs font-semibold text-slate-500 mt-1">03 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-red-100 text-red-700 text-xs font-bold px-2 py-1 rounded">Peso 3</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                            <p class="font-medium text-slate-800"><i class="fa-solid fa-child-reaching text-brand-500 mr-2"></i>Conhec. Pedagógicos</p>
-                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                <strong>Assunto:</strong> Estatuto da Criança e do Adolescente (ECA) aplicado à educação.
-                            </p>
-                        </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quinta -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-800">Quinta-feira</h4>
-                            <p class="text-xs font-semibold text-slate-500 mt-1">04 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2 py-1 rounded">Peso 2</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                            <p class="font-medium text-slate-800"><i class="fa-solid fa-language text-brand-500 mr-2"></i>Português</p>
-                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                <strong>Assunto:</strong> Ortografia; Acentuação gráfica; Estrutura e formação de palavras.
-                            </p>
-                        </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sexta -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col hover:border-brand-300 transition-colors">
-                    <div class="bg-slate-50 border-b border-slate-200 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-slate-800">Sexta-feira</h4>
-                            <p class="text-xs font-semibold text-slate-500 mt-1">05 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">Peso 1</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <div>
-                            <p class="font-medium text-slate-800"><i class="fa-solid fa-computer text-brand-500 mr-2"></i>Informática & Município</p>
-                            <p class="text-sm text-slate-600 mt-2 p-3 bg-slate-50 rounded-lg border border-slate-100">
-                                <strong>Assunto:</strong> Sistemas Operacionais (Win/Linux); Lei Orgânica de Assunção (Princípios fundamentais).
-                            </p>
-                        </div>
-                        <div class="mt-auto pt-4 border-t border-slate-100 flex flex-col gap-3">
-                            <button onclick="msgDisponivel()" class="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-2 px-4 rounded-lg text-sm transition-colors">Gerar Aula e Questões</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sábado -->
-                <div class="bg-slate-800 text-white rounded-2xl shadow-sm overflow-hidden flex flex-col border border-slate-700">
-                    <div class="border-b border-slate-700 px-5 py-4 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold">Sábado</h4>
-                            <p class="text-xs text-slate-400 mt-1">06 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-emerald-500/20 text-emerald-400 text-xs font-bold px-2 py-1 rounded border border-emerald-500/30">Revisão</span>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col gap-4">
-                        <ul class="space-y-3 text-sm text-slate-300">
-                            <li class="flex items-start gap-2"><i class="fa-solid fa-highlighter text-emerald-400 mt-1"></i>Revisão Ativa: Construir mapa mental das 3 correntes da Epistemologia Convergente.</li>
-                            <li class="flex items-start gap-2"><i class="fa-solid fa-book-skull text-rose-400 mt-1"></i>Caderno de Erros: Refazer questões da semana sobre o ECA.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Domingo -->
-                <div class="bg-gradient-to-br from-brand-600 to-brand-800 text-white rounded-2xl shadow-sm overflow-hidden flex flex-col md:col-span-2 xl:col-span-3">
-                    <div class="border-b border-white/10 px-6 py-5 flex justify-between items-center">
-                        <div>
-                            <h4 class="font-bold text-lg">Domingo - O Grande Dia</h4>
-                            <p class="text-sm text-brand-200 mt-1">07 de Junho de 2026</p>
-                        </div>
-                        <span class="bg-white text-brand-700 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Simulado</span>
-                    </div>
-                    <div class="p-6 flex flex-col md:flex-row gap-6 items-center">
-                        <div class="flex-1">
-                            <p class="text-brand-50 mb-4 text-sm md:text-base leading-relaxed">Avalie sua retenção semanal. 50 questões focadas exclusivamente nos assuntos de 01/06 a 05/06. Controle seu tempo e prepare seu psicológico para o dia da prova (Max 3h).</p>
-                        </div>
-                        <button onclick="msgDisponivel()" class="w-full md:w-auto bg-white text-brand-700 hover:bg-slate-50 font-bold py-3 px-8 rounded-xl shadow-lg transition-transform hover:scale-105 whitespace-nowrap">
-                            Iniciar Simulado 01 <i class="fa-solid fa-arrow-right ml-2"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-        <div id="tab-materiais" class="p-4 md:p-8 tab-section hidden">
-            <h2 class="text-2xl font-bold text-slate-800 mb-6 border-b pb-2">Módulo de Aulas</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm hover:border-brand-400 cursor-pointer transition-colors" onclick="switchTab('aula1')">
-                    <div class="flex items-center gap-4 mb-3">
-                        <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-file-pdf"></i></div>
-                        <div>
-                            <h3 class="font-bold text-slate-800 text-lg">Aula 01 - Fundamentos e Jorge Visca</h3>
-                            <p class="text-sm text-slate-500">Conhec. Específicos • Segunda (01/06)</p>
-                        </div>
-                    </div>
-                    <p class="text-sm text-slate-600">Teoria sobre a Epistemologia Convergente + 15 questões de fixação gabaritadas estilo Ápice.</p>
+                <div class="text-right hidden sm:block">
+                    <div class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-1">Progresso Global</div>
+                    <div class="text-3xl font-black text-indigo-900" id="global-progress-text">0%</div>
                 </div>
             </div>
-        </div>
+            <div id="cronograma-list" class="grid gap-4"></div>
+        </section>
 
-        <div id="tab-aula1" class="p-4 md:p-8 tab-section hidden bg-white min-h-screen">
-            <button onclick="switchTab('dashboard')" class="text-brand-600 font-medium mb-6 hover:underline flex items-center gap-2">
-                <i class="fa-solid fa-arrow-left"></i> Voltar ao Cronograma
+        <section id="view-aula" class="view-section hidden fade-in max-w-4xl mx-auto">
+            <button onclick="switchTab('cronograma')" class="mb-6 flex items-center gap-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                <i class="ph-bold ph-arrow-left"></i> Voltar ao Cronograma
             </button>
-
-            <div class="max-w-4xl mx-auto">
-                <header class="text-center mb-10 border-b border-slate-200 pb-8">
-                    <span class="bg-brand-100 text-brand-700 font-bold px-3 py-1 rounded-full text-xs uppercase tracking-widest mb-4 inline-block">Conhecimentos Específicos</span>
-                    <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">AULA 01: Fundamentos e Epistemologia Convergente (Jorge Visca)</h1>
-                    <p class="text-slate-500">Objeto de estudo da Psicopedagogia e as bases teóricas da aprendizagem.</p>
-                </header>
-
-                <article class="prose prose-slate max-w-none">
-                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">1. O Objeto de Estudo da Psicopedagogia</h3>
-                    <p class="mb-4 text-slate-700 leading-relaxed">Antes de avançarmos nas patologias e distúrbios, é fundamental definir o núcleo de atuação do Psicopedagogo. O objeto de estudo central da Psicopedagogia é o <strong>processo de aprendizagem humana</strong> — como ele se constrói, seus processos normais e suas alterações (dificuldades e transtornos).</p>
-                    <div class="bg-slate-50 p-4 border border-slate-200 rounded-lg mb-6">
-                        <strong class="text-slate-800">Cuidado com pegadinhas:</strong> A Psicopedagogia não estuda "o aluno" ou "a doença", mas a <em>relação que o sujeito estabelece com a aprendizagem</em>.
-                    </div>
-
-                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">2. A Epistemologia Convergente (Jorge Visca)</h3>
-                    <p class="mb-4 text-slate-700 leading-relaxed">O professor e pesquisador argentino Jorge Visca é o grande expoente da Epistemologia Convergente. Para Visca, a aprendizagem não pode ser explicada por uma única teoria. Ele propôs a <strong>assimilação recíproca (convergência) de três correntes teóricas fundamentais</strong> para entender a aprendizagem em toda a sua complexidade:</p>
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
-                            <h5 class="font-bold text-brand-700 mb-1">1. Escola de Genebra (Piaget)</h5>
-                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Epistemologia Genética.<br>Aporta a compreensão do desenvolvimento cognitivo, das estruturas de pensamento e dos processos de assimilação e acomodação.</p>
-                        </div>
-                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
-                            <h5 class="font-bold text-brand-700 mb-1">2. Psicanálise (Freud)</h5>
-                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Afetividade e o Inconsciente.<br>Aporta a visão da dinâmica emocional, o papel do desejo na aprendizagem e os vínculos afetivos estabelecidos com o objeto de conhecimento.</p>
-                        </div>
-                        <div class="bg-brand-50 p-4 rounded-lg border border-brand-100">
-                            <h5 class="font-bold text-brand-700 mb-1">3. Psicologia Social (Pichon-Rivière)</h5>
-                            <p class="text-sm text-slate-600"><strong>Foco:</strong> Interação e o Meio.<br>Aporta a compreensão de que o sujeito aprende em interação com os outros, a partir da teoria dos vínculos e da dinâmica dos grupos operativos.</p>
-                        </div>
-                    </div>
-
-                    <h3 class="text-xl font-bold text-brand-600 border-l-4 border-brand-500 pl-3 mb-4 mt-8">3. Dimensões do Sujeito Aprendente</h3>
-                    <p class="mb-4 text-slate-700 leading-relaxed">A avaliação e intervenção psicopedagógica (com base em Bossa, Fernández e Visca) entendem que o sujeito não aprende só "com a cabeça". O ato de aprender engloba múltiplas dimensões simultâneas:</p>
-                    <ul class="list-disc pl-6 mb-10 text-slate-700 space-y-2">
-                        <li><strong>Cognitiva:</strong> Relacionada ao raciocínio, lógica, atenção e memória.</li>
-                        <li><strong>Afetiva/Emocional:</strong> Sentimentos de frustração ou desejo relacionados à aprendizagem.</li>
-                        <li><strong>Social:</strong> O meio, a família, o acesso à cultura e o contexto escolar.</li>
-                        <li><strong>Psicomotora:</strong> A linguagem do corpo, esquema corporal e motricidade no ato de escrever/brincar.</li>
-                    </ul>
-
-                    <hr class="my-10 border-slate-200">
-
-                    <h3 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2"><i class="fa-solid fa-list-check text-brand-500"></i> Caderno de Fixação (15 Questões)</h3>
-                    
-                    <div class="space-y-8">
-                        <!-- Q1 -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
-                            <p class="font-bold text-slate-800 mb-4">01. O objeto de estudo central da Psicopedagogia, de acordo com as diretrizes e teóricos fundamentais da área, como Alicia Fernández e Nadia Bossa, é:</p>
-                            <div class="space-y-2 text-slate-700 pl-2">
-                                <p>A) O diagnóstico estrito de transtornos psiquiátricos infantis no ambiente escolar.</p>
-                                <p>B) A relação dialética entre o professor e a escola.</p>
-                                <p>C) O processo de aprendizagem humana e as suas alterações (dificuldades e transtornos).</p>
-                                <p>D) A psicomotricidade global da criança com deficiência física.</p>
-                                <p>E) O método pedagógico de ensino utilizado na educação básica.</p>
-                            </div>
-                        </div>
-
-                        <!-- Q2 -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
-                            <p class="font-bold text-slate-800 mb-4">02. Jorge Visca estruturou a "Epistemologia Convergente" visando uma compreensão global do processo de aprendizagem. Quais foram as três linhas teóricas fundamentais integradas por Visca nessa proposta?</p>
-                            <div class="space-y-2 text-slate-700 pl-2">
-                                <p>A) Comportamentalismo de Skinner; Construtivismo de Piaget; e Humanismo de Rogers.</p>
-                                <p>B) Psicanálise; Epistemologia Genética; e Psicologia Social (Enrique Pichon-Rivière).</p>
-                                <p>C) Socioconstrutivismo de Vygotsky; Psicanálise; e Behaviorismo.</p>
-                                <p>D) Epistemologia Genética; Teoria das Inteligências Múltiplas; e Psicomotricidade.</p>
-                                <p>E) Psicopedagogia Clínica; Educação Inclusiva; e Terapia Cognitivo-Comportamental.</p>
-                            </div>
-                        </div>
-
-                        <!-- Q3 -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
-                            <p class="font-bold text-slate-800 mb-4">03. De acordo com a teoria da Epistemologia Convergente elaborada por Jorge Visca, o papel da "Psicologia Social" (Pichon-Rivière) no entendimento da aprendizagem é essencial para compreender:</p>
-                            <div class="space-y-2 text-slate-700 pl-2">
-                                <p>A) O desenvolvimento biológico e neuromotor exato de cada fase etária.</p>
-                                <p>B) As pulsões inconscientes e os desejos reprimidos da criança em relação ao pai.</p>
-                                <p>C) As estruturas de pensamento e lógicas-matemáticas da inteligência.</p>
-                                <p>D) Como os processos cognitivos do indivíduo estão diretamente ligados ao condicionamento clássico.</p>
-                                <p>E) A forma como o sujeito aprende em interação, considerando a teoria dos vínculos e os papéis assumidos em grupos (escola, família).</p>
-                            </div>
-                        </div>
-
-                        <!-- Q4 -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
-                            <p class="font-bold text-slate-800 mb-4">04. O sujeito aprendente deve ser compreendido de forma multidimensional. A dimensão da aprendizagem que engloba o esquema corporal, as gnosias, as praxias e o controle tônico é denominada dimensão:</p>
-                            <div class="space-y-2 text-slate-700 pl-2">
-                                <p>A) Afetiva.</p>
-                                <p>B) Cognitiva.</p>
-                                <p>C) Psicomotora.</p>
-                                <p>D) Social.</p>
-                                <p>E) Emocional.</p>
-                            </div>
-                        </div>
-
-                        <!-- Ocultando Q5 a Q14 -->
-                        <div class="bg-brand-50 p-6 rounded-lg text-brand-800 text-center text-sm border border-brand-200 shadow-inner">
-                            <i class="fa-solid fa-lock text-2xl mb-2 opacity-50 block"></i>
-                            <em>[Questões 05 a 14 focadas na profundidade do Código de Ética do Psicopedagogo e metodologias de avaliação clínica e institucional estão liberadas no material em PDF para download na área do aluno.]</em>
-                        </div>
-
-                        <!-- Q15 -->
-                        <div class="bg-slate-50 p-6 rounded-xl border border-slate-200 hover:border-brand-300 transition-colors">
-                            <p class="font-bold text-slate-800 mb-4">15. Para o Psicopedagogo Institucional (atuando no âmbito escolar), de acordo com as atribuições estabelecidas e o Código de Ética, a sua relação e atuação diante das dificuldades de aprendizagem dos alunos deve focar primariamente em:</p>
-                            <div class="space-y-2 text-slate-700 pl-2">
-                                <p>A) Realizar terapia clínica individual dentro da escola em horários de aula para resolver traumas passados.</p>
-                                <p>B) Receitar adequações medicamentosas juntamente com o encaminhamento psiquiátrico imediato sem avaliar a escola.</p>
-                                <p>C) Problematizar a realidade escolar junto à equipe pedagógica, analisando as relações, os métodos de ensino e propondo intervenções na estrutura educacional.</p>
-                                <p>D) Promover o avanço e aprovação compulsória de alunos com dificuldades para evitar danos à sua autoestima.</p>
-                                <p>E) Transferir a culpa do não-aprender exclusivamente para o déficit cognitivo orgânico do aluno.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-10 mb-20 text-center md:text-left">
-                        <button onclick="document.getElementById('gabarito').classList.toggle('hidden')" class="bg-slate-800 text-white font-bold py-3 px-8 rounded-lg hover:bg-slate-700 transition-colors shadow-lg">
-                            Mostrar Gabarito
-                        </button>
-                        <div id="gabarito" class="hidden mt-4 bg-brand-50 border border-brand-200 p-5 rounded-lg text-brand-800 font-medium shadow-inner text-left">
-                            <h4 class="font-bold mb-2">Respostas:</h4>
-                            <p class="text-lg">01 - <strong class="text-brand-900">C</strong> | 02 - <strong class="text-brand-900">B</strong> | 03 - <strong class="text-brand-900">E</strong> | 04 - <strong class="text-brand-900">C</strong> | ... | 15 - <strong class="text-brand-900">C</strong></p>
-                        </div>
-                    </div>
-
-                </article>
+            
+            <div class="bg-indigo-900 rounded-3xl p-8 shadow-xl mb-8 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+                <div id="lesson-header-content" class="relative z-10"></div>
+                <div class="absolute bottom-0 left-0 h-2 bg-indigo-950 w-full">
+                    <div id="lesson-progress-bar" class="h-full bg-emerald-400 transition-all duration-1000 ease-out" style="width: 0%"></div>
+                </div>
             </div>
-        </div>
 
+            <article id="lesson-theory" class="bg-white rounded-3xl p-6 md:p-10 shadow-sm border border-slate-200 mb-10 text-lg leading-relaxed text-slate-700"></article>
+
+            <div id="lesson-questions-area" class="mt-12 hidden">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="h-px bg-slate-300 flex-grow"></div>
+                    <h3 class="text-2xl font-black text-slate-800 flex items-center gap-2 uppercase tracking-wide">
+                        <i class="ph-bold ph-barbell text-indigo-600"></i> Praticando para Fixar
+                    </h3>
+                    <div class="h-px bg-slate-300 flex-grow"></div>
+                </div>
+                
+                <div id="questions-container" class="space-y-8"></div>
+
+                <div class="mt-12 text-center pb-20">
+                    <button id="btn-finish-lesson" onclick="finishLesson()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xl px-10 py-5 rounded-2xl shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1 w-full md:w-auto">
+                        <i class="ph-bold ph-flag-checkered mr-2"></i> Finalizar e Ver Diagnóstico
+                    </button>
+                    <div id="temp-warning-container"></div>
+                </div>
+            </div>
+        </section>
     </main>
 
+    <div id="diagnostic-modal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden transform scale-95 opacity-0 transition-all duration-300" id="diagnostic-content">
+            <div class="bg-indigo-900 p-8 text-center relative overflow-hidden">
+                <i class="ph-duotone ph-chart-polar absolute -left-10 -bottom-10 text-9xl text-white/10"></i>
+                <h2 class="text-3xl font-black text-white relative z-10">Boletim Estratégico</h2>
+                <p class="text-indigo-200 mt-2 relative z-10 text-lg">Diagnóstico de Desempenho da Aula</p>
+            </div>
+            
+            <div class="p-8">
+                <div class="flex justify-center items-center gap-8 mb-8">
+                    <div class="text-center">
+                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Nota Final</div>
+                        <div class="text-5xl font-black text-slate-800" id="diag-score">0/15</div>
+                    </div>
+                    <div class="w-px h-16 bg-slate-200"></div>
+                    <div class="text-center">
+                        <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-1">Aproveitamento</div>
+                        <div class="text-5xl font-black text-emerald-500" id="diag-percent">0%</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-emerald-50 border border-emerald-100 p-5 rounded-2xl">
+                        <h4 class="font-black text-emerald-800 mb-2 flex items-center gap-2"><i class="ph-bold ph-trend-up"></i> Pontos Fortes</h4>
+                        <ul id="diag-strengths" class="text-emerald-700 text-sm space-y-1 font-medium list-disc pl-4"></ul>
+                    </div>
+                    <div class="bg-rose-50 border border-rose-100 p-5 rounded-2xl">
+                        <h4 class="font-black text-rose-800 mb-2 flex items-center gap-2"><i class="ph-bold ph-warning-circle"></i> Foco de Revisão Urgente</h4>
+                        <ul id="diag-weaknesses" class="text-rose-700 text-sm space-y-1 font-medium list-disc pl-4"></ul>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 text-center">
+                    <i class="ph-fill ph-quotes text-3xl text-indigo-300 mb-2"></i>
+                    <p id="diag-quote" class="text-lg font-bold text-slate-700 italic"></p>
+                </div>
+                
+                <button onclick="closeDiagnostic()" class="mt-8 w-full bg-slate-800 hover:bg-slate-900 text-white font-bold text-lg py-4 rounded-xl transition-colors">
+                    Retornar ao Cronograma
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Configuração inicial
-        document.addEventListener('DOMContentLoaded', () => {
-            switchTab('edital'); // Abre a Home (Raio-X) no load
-        });
-
-        // Função do Sidebar Mobile
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            const overlay = document.getElementById('sidebarOverlay');
+        const concursoData = {
+            cargo: "Psicopedagogo",
+            banca: "Ápice Consultoria",
+            vagas: "01 (Ampla Concorrência)",
+            salario: "R$ 4.350,00",
+            cargaHoraria: "30h semanais",
+            requisito: "Ensino Superior em Pedagogia ou Psicologia, com Especialização em Psicopedagogia Institucional e/ou Clínica.",
+            datasImportantes: [
+                { evento: "Inscrições Abertas", data: "01 a 30 de junho de 2026", icon: "ph-calendar-plus" },
+                { evento: "Limite para Pagamento", data: "10 de julho de 2026", icon: "ph-money" },
+                { evento: "Aplicações das Provas", data: "30 de agosto de 2026", icon: "ph-exam", highlight: true },
+                { evento: "Gabarito Preliminar", data: "31 de agosto de 2026", icon: "ph-list-checks" },
+                { evento: "Resultado Final", data: "30 de novembro de 2026", icon: "ph-trophy" }
+            ],
+            atribuicoes: `Atuar no diagnóstico, intervenção e prevenção de dificuldades de aprendizagem no âmbito institucional (escolas da rede municipal) e clínico (centros de atendimento). Orientar professores na adaptação curricular e metodologias para alunos com Transtornos Específicos de Aprendizagem, TDAH e deficiências. Participar ativamente da elaboração e execução do Projeto Político Pedagógico (PPP). Promover a educação inclusiva, realizando triagens, avaliações psicopedagógicas e encaminhamentos para redes de apoio intersetorial (saúde e assistência social). Realizar escuta e orientação às famílias para fortalecer o vínculo escolar. Desenvolver projetos de superação do fracasso escolar.`,
             
-            if(sidebar.classList.contains('-translate-x-full')) {
-                sidebar.classList.remove('-translate-x-full');
-                overlay.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                overlay.classList.add('hidden');
-            }
-        }
-
-        // Sistema de Abas (Navegação SPA)
-        function switchTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-section');
-            tabs.forEach(tab => tab.classList.add('hidden'));
-
-            // Sincroniza Botões Laterais
-            const navBtns = document.querySelectorAll('.nav-btn');
-            navBtns.forEach(btn => {
-                btn.classList.remove('bg-brand-600', 'text-white');
-                btn.classList.add('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
-            });
-
-            // Sincroniza Abas do Topo
-            const topNavBtns = document.querySelectorAll('.top-nav-btn');
-            topNavBtns.forEach(btn => {
-                btn.classList.remove('border-brand-600', 'text-brand-600', 'font-bold');
-                btn.classList.add('border-transparent', 'text-slate-500', 'font-medium');
-            });
-
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-
-            const activeBtn = document.getElementById('btn-' + tabId);
-            if(activeBtn) {
-                activeBtn.classList.remove('text-slate-300', 'hover:bg-slate-800', 'hover:text-white');
-                activeBtn.classList.add('bg-brand-600', 'text-white');
-            }
-
-            const activeTopBtn = document.getElementById('top-btn-' + tabId);
-            if(activeTopBtn) {
-                activeTopBtn.classList.remove('border-transparent', 'text-slate-500', 'font-medium');
-                activeTopBtn.classList.add('border-brand-600', 'text-brand-600', 'font-bold');
-            }
-
-            if(window.innerWidth < 768 && tabId !== 'aula1') {
-                const sidebar = document.getElementById('sidebar');
-                if(!sidebar.classList.contains('-translate-x-full')) {
-                    toggleSidebar();
-                }
-            }
-            
-            document.querySelector('main').scrollTo(0,0);
-        }
-
-        // Sistema de Alertas
-        function msgDisponivel() {
-            mostrarMensagem("Aulas em Processamento", "O Mentor está compilando a próxima aula em formato interativo para Psicopedagogia. Explore a 'Aula 01' de segunda-feira para visualizar a didática!");
-        }
-
-        function mostrarMensagem(titulo, texto) {
-            const modalAntigo = document.getElementById('custom-modal');
-            if(modalAntigo) modalAntigo.remove();
-
-            const modalHTML = `
-                <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-                    <div class="bg-white rounded-2xl shadow-2xl p-6 max-w-md w-full border border-slate-200 transform transition-all">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                                <i class="fa-solid fa-circle-info text-brand-500"></i> ${titulo}
-                            </h3>
-                            <button onclick="document.getElementById('custom-modal').remove()" class="text-slate-400 hover:text-slate-700">
-                                <i class="fa-solid fa-xmark text-lg"></i>
-                            </button>
+            conteudoProgramatico: [
+                { 
+                    disciplina: "Português (20 Qs - Peso 2)", 
+                    topicos: `
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">1.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Interpretação de texto.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">2.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Fonética e Fonologia: fonemas, letras, encontros vocálicos e consonantais, dígrafos, sílabas e divisão silábica, acento tônico e gráfico.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">3.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Ortografia: emprego das letras, acentuação gráfica, homonímia e polissemia.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">4.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Morfologia: estrutura e formação das palavras. classes de palavras.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">5.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Pontuação: emprego dos sinais de pontuação.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">6.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Sintaxe: os termos da oração. períodos simples e compostos. orações subordinadas e coordenadas. concordância e regência verbal e nominal. ocorrência da crase.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">7.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Semântica: sinônimos e antônimos. homônimos, parônimos.</div>
+                            </div>
                         </div>
-                        <p class="text-slate-600 mb-6 leading-relaxed">${texto}</p>
-                        <div class="text-right">
-                            <button onclick="document.getElementById('custom-modal').remove()" class="bg-slate-800 text-white font-bold py-2 px-6 rounded-lg hover:bg-slate-700 transition-colors">
-                                Entendido
-                            </button>
+                    ` 
+                },
+                { 
+                    disciplina: "Informática (5 Qs - Peso 1)", 
+                    topicos: `
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">1.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Hardware e Sistemas Operacionais (Windows e Linux). Componentes básicos, pastas, arquivos, atalhos.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">2.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Suítes de Escritório (Microsoft Office, LibreOffice, Google Drive). Word/Writer, Excel/Calc, PowerPoint.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">3.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Internet, Redes e Correio Eletrônico. Navegadores, buscas, segurança da informação.</div>
+                            </div>
+                        </div>
+                    ` 
+                },
+                { 
+                    disciplina: "Conhecimentos sobre o Município e Legislação (10 Qs - Peso 1)", 
+                    topicos: `
+                        <div class="space-y-4">
+                            <div class="mb-4 text-base font-bold text-slate-700 bg-amber-50 border border-amber-200 p-4 rounded-xl">
+                                <i class="ph-bold ph-info text-amber-600 mr-2"></i> Os conteúdos referentes ao Município de Assunção/PB constarão em material complementar em formato digital, através do link a seguir e no site da Ápice Consultoria:<br>
+                                <a href="https://drive.google.com/drive/folders/1Y98XvOjSrTyZA0LGfTLCmzuo2IHCV-5r?usp=sharing" target="_blank" class="text-indigo-600 hover:underline break-all mt-2 inline-block">https://drive.google.com/drive/folders/1Y98XvOjSrTyZA0LGfTLCmzuo2IHCV-5r?usp=sharing</a>
+                            </div>
+                            
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">1.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Lei orgânica municipal de 19 de julho de 1997.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">2.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Lei 147/2005 - Estatuto do servidor.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">3.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Livros de História Local: Assunção Paraíba, Teus Filhos Contam Tua História (Volume 1) e Estaca Zero de Ontem, Assunção de Hoje.</div>
+                            </div>
+                        </div>
+                    ` 
+                },
+                { 
+                    disciplina: "Conhecimentos Específicos - Psicopedagogia (15 Qs - Peso 3)", 
+                    topicos: `
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">1.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Histórico e Fundamentação da Psicopedagogia Clínica e Institucional.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">2.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Teorias do Desenvolvimento e da Aprendizagem (Jean Piaget, Lev Vygotsky, Henri Wallon, David Ausubel).</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">3.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Dificuldades e Transtornos Específicos de Aprendizagem (Dislexia, Disortografia, Discalculia, Disgrafia) e TDAH.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">4.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Educação Inclusiva, Educação Especial e o papel do Psicopedagogo. TEA (Transtorno do Espectro Autista) na escola.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">5.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Diagnóstico, Avaliação e Intervenção Psicopedagógica. Instrumentos de avaliação.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">6.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">O Fracasso Escolar: múltiplas determinações. A relação família-escola.</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">7.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Legislação Educacional: LDB (Lei 9.394/96), ECA (Lei 8.069/90) e Estatuto da Pessoa com Deficiência (Lei 13.146/2015).</div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white rounded-xl border border-slate-200 shadow-sm hover:border-indigo-300 transition-colors">
+                                <span class="font-black text-indigo-600 text-2xl shrink-0">8.</span>
+                                <div class="font-bold text-slate-800 text-lg pt-0.5">Projeto Político Pedagógico (PPP) e o trabalho em equipe multidisciplinar.</div>
+                            </div>
+                        </div>
+                    ` 
+                }
+            ]
+        };
+
+        const Q = (text, opts, ansIndex, diff, explArr) => {
+            let explHtml = '<div class="space-y-3 mt-4 pt-4 border-t border-slate-200">';
+            const letters = ['A', 'B', 'C', 'D', 'E'];
+            opts.forEach((opt, idx) => {
+                const isCorrect = (idx === ansIndex);
+                const colorClass = isCorrect ? 'text-emerald-900 bg-emerald-50 border-emerald-300' : 'text-slate-700 bg-slate-50 border-slate-200';
+                const icon = isCorrect ? 'ph-check-circle text-emerald-600' : 'ph-x-circle text-rose-500';
+                let explText = Array.isArray(explArr) ? explArr[idx] : (isCorrect ? explArr : "Alternativa incorreta de acordo com a teoria focada.");
+                explHtml += `
+                    <div class="p-3 rounded-xl border ${colorClass} text-sm flex gap-3">
+                        <i class="ph-fill ${icon} text-2xl shrink-0 mt-0.5"></i>
+                        <div>
+                            <div class="font-black mb-1 text-slate-800">Alternativa ${letters[idx]} ${isCorrect ? '<span class="text-emerald-600">(GABARITO)</span>' : ''}</div>
+                            <div class="font-medium opacity-90 leading-relaxed">${explText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            explHtml += '</div>';
+            return { t: text, o: opts, a: ansIndex, d: diff, e: explHtml };
+        };
+
+        const aulasDatabase = [
+            {
+                id: 1, dia: "Segunda-feira, 01/06/2026", disciplina: "Específicos - Psicopedagogia", tema: "Teorias da Aprendizagem e Fundamentos", progresso: 12,
+                teoria: `<p class="drop-cap">O</p><p class="text-lg leading-relaxed mb-4">alicerce da Psicopedagogia reside na compreensão de como o sujeito aprende. Dominar as teorias epistemológicas clássicas é essencial para a prova.</p>
+                        <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Jean Piaget e a Epistemologia Genética</h4>
+                        <p class="mb-3 text-slate-700">Para Piaget, a aprendizagem é um processo de <strong>Equilibração</strong>. Ocorre através de dois mecanismos quando o sujeito interage com o meio:</p>
+                        <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><span class="keyword">Assimilação:</span> Incorporar um novo objeto ou ideia a um esquema mental já existente.</li>
+                            <li><span class="keyword">Acomodação:</span> Modificar o esquema mental existente para conseguir lidar com uma nova situação. (Isso gera o aprendizado real).</li>
+                        </ul>
+                        <p class="mb-3 text-slate-700"><strong>Estágios do Desenvolvimento:</strong> 1. Sensório-motor (0-2 anos); 2. Pré-operatório (2-7 anos - egocentrismo, jogo simbólico); 3. Operatório Concreto (7-11 anos - reversibilidade); 4. Operatório Formal (12+ anos - pensamento abstrato/hipotético).</p>
+
+                        <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Lev Vygotsky e o Sociointeracionismo</h4>
+                        <p class="mb-3 text-slate-700">Vygotsky postula que o desenvolvimento é impulsionado pela aprendizagem, que ocorre mediada por signos (linguagem) e ferramentas em um contexto cultural. O conceito mais cobrado em provas é a <strong>Zona de Desenvolvimento Proximal (ZDP)</strong>, que é a distância entre:</p>
+                        <ul class="list-disc pl-6 space-y-2 mt-2">
+                            <li><strong>Nível de Desenvolvimento Real:</strong> O que a criança faz sozinha.</li>
+                            <li><strong>Nível de Desenvolvimento Potencial:</strong> O que a criança faz com a ajuda de um adulto ou par mais capaz. A intervenção psicopedagógica atua justamente na ZDP.</li>
+                        </ul>`,
+                perolas: `<ul class="space-y-4">
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span><strong>Atenção à Pegadinha:</strong> Para Piaget, o desenvolvimento antecede a aprendizagem (tem que amadurecer para aprender). Para Vygotsky, é a <strong>aprendizagem que puxa/promove o desenvolvimento</strong>.</span></li>
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span><strong>Wallon</strong> é a palavra-chave para <strong>AFETIVIDADE</strong>. Ele defende a integração entre emoção, cognição e movimento no ato de aprender.</span></li>
+                          </ul>`,
+                questoes: [
+                    Q("Segundo a teoria sociointeracionista de Lev Vygotsky, a Zona de Desenvolvimento Proximal (ZDP) pode ser definida como:", ["O estágio biológico de maturação neural antes do nascimento.", "A capacidade da criança de resolver problemas sem nenhuma ajuda externa.", "A distância entre o que a criança consegue fazer sozinha e o que ela faz com auxílio de alguém mais experiente.", "A fase em que a criança adquire o pensamento hipotético-dedutivo.", "O espaço físico ideal planejado pela escola para facilitar a aprendizagem infantil."], 2, 'Fácil', [
+                        "Incorreta. Vygotsky não foca apenas na maturação inata biológica, mas no social.",
+                        "Incorreta. Isso é o Nível de Desenvolvimento Real.",
+                        "Correta. A ZDP é exatamente a distância entre o nível de desenvolvimento real (sozinho) e o potencial (com ajuda/mediação).",
+                        "Incorreta. Isso refere-se ao Operatório Formal de Piaget.",
+                        "Incorreta. Refere-se a processos cognitivos, não a espaços arquitetônicos."
+                    ]),
+                    Q("Jean Piaget descreve a construção do conhecimento através do processo de equilibração. Quando uma criança modifica seus próprios esquemas mentais para lidar com um objeto novo, ocorreu a:", ["Assimilação", "Acomodação", "Maturação", "Mediação semiótica", "Transferência afetiva"], 1, 'Média', [
+                        "Incorreta. Assimilação é incorporar algo ao esquema já existente sem mudá-lo profundamente.",
+                        "Correta. A Acomodação exige que a criança reestruture ou modifique seu esquema cognitivo para internalizar a nova informação.",
+                        "Incorreta.",
+                        "Incorreta. Termo de Vygotsky.",
+                        "Incorreta."
+                    ]),
+                    Q("O estágio do desenvolvimento cognitivo piagetiano em que a criança, geralmente entre 7 e 11 anos, começa a realizar operações mentais lógicas, compreendendo o princípio da reversibilidade (como saber que a água pode virar gelo e voltar a ser água), é chamado de:", ["Sensório-motor", "Pré-operatório", "Operatório formal", "Operatório concreto", "Pensamento mágico"], 3, 'Média', [
+                        "Incorreta. 0 a 2 anos (reflexos e ação física).",
+                        "Incorreta. 2 a 7 anos (egocentrismo, não possui reversibilidade plena).",
+                        "Incorreta. A partir dos 12 anos (abstração pura).",
+                        "Correta. No Operatório Concreto a criança consegue usar a lógica e entende a reversibilidade, desde que atrelada a situações concretas.",
+                        "Incorreta. Característica do pré-operatório."
+                    ]),
+                    Q("Na visão de Henri Wallon, o processo de ensino-aprendizagem não pode ser analisado fragmentando-se o sujeito. Para esse autor, o desenvolvimento humano se dá pela integração harmônica de três dimensões principais, que são:", ["Id, Ego e Superego.", "Assimilação, Acomodação e Equilibração.", "Afetividade, Cognição (Inteligência) e Ato Motor (Movimento).", "Zona Real, Zona Proximal e Zona Potencial.", "Leitura, Escrita e Cálculo."], 2, 'Fácil', [
+                        "Incorreta. Conceitos da Psicanálise de Freud.",
+                        "Incorreta. Conceitos de Piaget.",
+                        "Correta. Wallon propõe a psicogênese da pessoa completa, unindo campos motor, afetivo e cognitivo indissociavelmente.",
+                        "Incorreta. Conceitos de Vygotsky.",
+                        "Incorreta."
+                    ]),
+                    Q("Diferenciando as vertentes da Psicopedagogia, a atuação INSTITUCIONAL tem caráter predominantemente:", ["Curativo e focado no teste individual de QI da criança.", "Preventivo e abrange a melhoria dos processos de ensino-aprendizagem dentro do contexto escolar, orientando professores e equipe.", "Terapêutico, exigindo um consultório dentro da escola para atendimento exclusivo diário do aluno com déficit.", "Mecânico, onde o psicopedagogo substitui o professor regente na sala de aula.", "Exclusivo de elaboração de laudos médicos para encaminhamento ao INSS."], 1, 'Média', [
+                        "Incorreta. Caráter curativo forte e testes individuais são do viés clínico.",
+                        "Correta. O psicopedagogo na escola (institucional) previne o fracasso escolar, analisa o PPP, orienta professores e avalia a dinâmica da aprendizagem coletiva e relacional.",
+                        "Incorreta. Na escola, o atendimento não é clínico-terapêutico individual sistemático.",
+                        "Incorreta. O psicopedagogo não substitui o regente, ele assessora.",
+                        "Incorreta."
+                    ]),
+                    Q("Segundo a perspectiva psicopedagógica moderna, o fracasso escolar de um aluno deve ser compreendido como:", ["Fruto exclusivo da falta de inteligência inata ou preguiça do estudante.", "Resultado de um cérebro organicamente danificado, isentando a escola de responsabilidade.", "Um sintoma multicausal, que envolve fatores emocionais, familiares, pedagógicos, metodológicos e socioculturais.", "Erro exclusivo do método de alfabetização escolhido pelo professor.", "Consequência apenas da falta de estrutura financeira da família."], 2, 'Média', [
+                        "Incorreta. Visão ultrapassada e excludente.",
+                        "Incorreta. O orgânico é um fator, mas não o único, e não isenta a escola de fazer adaptações.",
+                        "Correta. O fracasso escolar é lido hoje como um problema de rede (multideterminado). Não se culpabiliza apenas o aluno.",
+                        "Incorreta. O método é uma variável, não a única.",
+                        "Incorreta."
+                    ]),
+                    Q("Qual o conceito de David Ausubel que afirma que a aprendizagem ocorre de forma sólida quando a nova informação se ancora em conhecimentos prévios relevantes que o aluno já possui?", ["Condicionamento operante", "Aprendizagem Significativa", "Reforço positivo", "Consciência fonológica", "Inconsciente coletivo"], 1, 'Fácil', [
+                        "Incorreta. Skinner.",
+                        "Correta. Ausubel defende a Aprendizagem Significativa, onde o conhecimento prévio (subsunçor) é a âncora para aprender algo novo com sentido.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta. Jung."
+                    ])
+                ]
+            },
+
+            {
+                id: 2, dia: "Terça-feira, 02/06/2026", disciplina: "Português", tema: "Fonética, Fonologia e Interpretação", progresso: 25,
+                teoria: `<p class="drop-cap">A</p><p class="text-lg leading-relaxed mb-4">Fonética estuda os sons da fala (fonemas), enquanto a ortografia estuda a escrita (letras). Nem sempre o número de letras é igual ao número de fonemas.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Fonética e Fonologia</h4>
+                         <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><span class="keyword">Fonema:</span> É a menor unidade sonora. O que você <strong>ouve</strong>. Ex: "táxi" tem 4 letras, mas soa /t-á-k-s-i/ (5 fonemas).</li>
+                            <li><span class="keyword">Letra:</span> O que você <strong>escreve</strong>.</li>
+                            <li><span class="keyword">Dígrafo:</span> <strong>Duas letras</strong> que emitem <strong>um único som</strong>.
+                                <ul class="list-circle pl-6 mt-1 text-slate-600">
+                                    <li><strong>Consonantais:</strong> CH, LH, NH, RR, SS, QU, GU, SC, XC. Ex: pa-<strong>ss</strong>o (5 letras, 4 fonemas).</li>
+                                    <li><strong>Vocálicos:</strong> Vogais com M ou N indicando som nasal (AM, EM, IN, ON). Ex: c<strong>am</strong>-po (/kãpo/ - 5 letras, 4 fonemas).</li>
+                                </ul>
+                            </li>
+                            <li><span class="keyword">Encontro Vocálico:</span> 
+                                <ul class="list-circle pl-6 mt-1 text-slate-600">
+                                    <li><strong>Ditongo:</strong> Vogal + Semivogal na mesma sílaba. Não se separam! (Ex: c<strong>ai</strong>-xa).</li>
+                                    <li><strong>Hiato:</strong> Duas vogais juntas na palavra, mas que se <strong>separam na divisão</strong>. (Ex: s<strong>a-ú</strong>-de).</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Semântica</h4>
+                        <p class="mb-3 text-slate-700">O contexto altera o significado. A <strong>Polissemia</strong> é a capacidade de uma palavra ter vários sentidos (Ex: bati o <em>pé</em> na mesa / ele tem um <em>pé</em> de laranja).</p>`,
+                perolas: `<ul class="space-y-4">
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Atenção: A palavra <strong>TAMBÉM</strong> tem 6 letras, mas apenas <strong>4 fonemas</strong>. O 'AM' é dígrafo (/ã/) e o 'EM' final tem som de ditongo (/ẽj/).</span></li>
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Dígrafos RR e SS <strong>separam-se</strong> na divisão silábica (car-ro). Já CH, LH e NH <strong>NUNCA</strong> se separam (chu-va).</span></li>
+                          </ul>`,
+                questoes: [
+                    Q("Quantas letras e fonemas tem a palavra 'EXCESSÃO'?", ["8 letras e 8 fonemas", "8 letras e 7 fonemas", "8 letras e 6 fonemas", "7 letras e 5 fonemas", "8 letras e 5 fonemas"], 2, 'Média', [
+                        "Incorreta. Existem dígrafos que reduzem o número de fonemas.",
+                        "Incorreta. Há mais de um dígrafo.",
+                        "Correta. 8 letras. O 'XC' soa como /s/ e o 'SS' soa como /s/. Dois dígrafos reduzem o som em 2 unidades. Resultam 6 fonemas (/e-s-e-s-ã-w/).",
+                        "Incorreta. A contagem de letras está errada.",
+                        "Incorreta."
+                    ]),
+                    Q("Assinale a alternativa onde TODAS as palavras apresentam hiato.", ["Saúde, juízes, baú.", "Sabiá, gratuito, pássaro.", "Moeda, rainha, cooperar.", "Caixa, peixe, saudade.", "Míngua, água, tênue."], 2, 'Difícil', [
+                        "Incorreta. Juízes tem hiato, baú tem hiato, mas nem todas as oxítonas terminadas em I ou U são hiatos.",
+                        "Incorreta. Não possuem hiato.",
+                        "Correta. Mo-e-da; ra-i-nha; co-o-pe-rar. As vogais se encontram na palavra, mas se separam na divisão silábica.",
+                        "Incorreta. Caixa e peixe possuem ditongos (ai, ei).",
+                        "Incorreta. Possuem ditongos crescentes finais."
+                    ]),
+                    Q("Na palavra 'MÁXIMO', a relação entre letras e fonemas é:", ["6 letras, 7 fonemas", "6 letras, 6 fonemas", "6 letras, 5 fonemas", "5 letras, 6 fonemas", "7 letras, 7 fonemas"], 1, 'Média', [
+                        "Incorreta. O X não soa como /ks/ aqui para aumentar os fonemas.",
+                        "Correta. 6 letras. O 'X' soa como /s/ (má-ssi-mo). Uma letra = um som. Portanto, 6 fonemas.",
+                        "Incorreta. Não há dígrafos para reduzir os fonemas.",
+                        "Incorreta. Contagem de letras incorreta.",
+                        "Incorreta. Contagem de letras incorreta."
+                    ]),
+                    Q("O plural que altera a sílaba tônica (deslocamento de acento) ocorre em:", ["Cidadão - Cidadãos", "Caráter - Caracteres", "Júnior - Juniores", "Fóssil - Fósseis", "Lápis - Lápis"], 1, 'Difícil', [
+                        "Incorreta. Continua oxítona/tônica no final.",
+                        "Correta. Ca-RÁ-ter (paroxítona). No plural: ca-rac-TE-res (paroxítona, mas o acento mudou de posição na palavra). É um plural anômalo famoso.",
+                        "Incorreta. JU-nior / ju-NI-o-res (a tônica muda de posição, sim, mas o examinador da Ápice usa Caráter como clássica).",
+                        "Incorreta. FÓS-sil / FÓS-seis (mantém a posição).",
+                        "Incorreta. Invariável."
+                    ]),
+                    Q("'O menino quebrou o BRAÇO' / 'O BRAÇO do rio estava poluído'. O fenômeno semântico é:", ["Antonímia", "Sinonímia", "Polissemia", "Paronímia", "Homonímia perfeita"], 2, 'Fácil', [
+                        "Incorreta. Não são sentidos opostos.",
+                        "Incorreta. Não são sentidos idênticos.",
+                        "Correta. Polissemia: uma única palavra ganhando vários significados baseados em semelhança no contexto.",
+                        "Incorreta. Parônimos são palavras parecidas (suar/soar).",
+                        "Incorreta. Homônimos são palavras diferentes que coincidem (São santo / São verbo)."
+                    ]),
+                    Q("A divisão silábica de 'PÁSSARO' e 'EXCEÇÃO' é:", ["Pá-ssa-ro / Ex-ce-ção", "Pás-sa-ro / Ex-ce-ção", "Pás-sa-ro / E-xce-ção", "Pá-ssa-ro / E-xce-ção", "Pás-sar-o / Ex-ceç-ão"], 1, 'Média', [
+                        "Incorreta. O 'SS' precisa ser separado.",
+                        "Correta. Dígrafos SS separam (Pás-sa-ro). Dígrafos XC também separam (Ex-ce-ção).",
+                        "Incorreta. O XC não fica na mesma sílaba.",
+                        "Incorreta. SS e XC não ficam na mesma sílaba.",
+                        "Incorreta. Divisão grotescamente errada."
+                    ]),
+                    Q("Assinale a palavra com DÍGRAFO VOCÁLICO:", ["Chuva", "Assar", "Campo", "Quilo", "Ninho"], 2, 'Fácil', [
+                        "Incorreta. CH é consonantal.",
+                        "Incorreta. SS é consonantal.",
+                        "Correta. Em 'C-am-po', o 'AM' forma um único som nasal (/ã/). Isso é um dígrafo vocálico.",
+                        "Incorreta. QU é consonantal.",
+                        "Incorreta. NH é consonantal."
+                    ]),
+                    Q("Em qual alternativa a vírgula foi usada INCORRETAMENTE?", ["Ontem, eu estudei bastante.", "O prefeito, assinou o decreto.", "Marta, a nova enfermeira, chegou.", "Maria, traga o relatório.", "Fui à feira, mas não comprei nada."], 1, 'Média', [
+                        "Incorreta. Vírgula isola adjunto adverbial deslocado. Correto.",
+                        "Correta. Erro crasso: A vírgula está separando o Sujeito (O prefeito) do seu Verbo (assinou). Isso é proibido em português.",
+                        "Incorreta. Isola o aposto explicativo. Correto.",
+                        "Incorreta. Isola o vocativo (Maria). Correto.",
+                        "Incorreta. Vírgula antes de conjunção adversativa (mas). Correto."
+                    ]),
+                    Q("A palavra 'TAMBÉM' possui:", ["Um ditongo crescente", "Um dígrafo e um ditongo", "Dois dígrafos vocálicos", "Três dígrafos", "Apenas letras plenas"], 1, 'Difícil', [
+                        "Incorreta. O ditongo no final é decrescente.",
+                        "Correta. O 'AM' é dígrafo vocálico (/ã/). O 'EM' final funciona como ditongo fonético (soa 'einh').",
+                        "Incorreta. O M final não forma dígrafo quando está no fim da palavra (forma ditongo).",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("'Suar' e 'Soar' são palavras:", ["Antônimas", "Sinônimas", "Homônimas homógrafas", "Parônimas", "Homônimas homófonas"], 3, 'Fácil', [
+                        "Incorreta. Não são opostas.",
+                        "Incorreta. Não têm mesmo sentido.",
+                        "Incorreta. Não se escrevem exatamente igual.",
+                        "Correta. Parônimos são palavras muito parecidas na grafia e pronúncia, mas com sentidos diferentes (Transpirar vs Emitir som).",
+                        "Incorreta. Não têm som idêntico."
+                    ]),
+                    Q("Toda proparoxítona é acentuada. Assinale a proparoxítona:", ["Rubrica", "Caju", "Lápis", "Máquina", "Fórum"], 3, 'Fácil', [
+                        "Incorreta. Ru-bri-ca é paroxítona.",
+                        "Incorreta. Ca-ju é oxítona.",
+                        "Incorreta. Lá-pis é paroxítona.",
+                        "Correta. MÁ-qui-na. Tônica na antepenúltima sílaba.",
+                        "Incorreta. Fó-rum é paroxítona."
+                    ]),
+                    Q("A conjunção 'PORTANTO' exprime ideia de:", ["Adição", "Conclusão", "Oposição", "Causa", "Tempo"], 1, 'Fácil', [
+                        "Incorreta. Adição seria 'E'.",
+                        "Correta. É uma conjunção coordenativa conclusiva (Logo, por isso, portanto).",
+                        "Incorreta. Oposição seria 'Mas', 'Porém'.",
+                        "Incorreta. Causa seria 'Porque'.",
+                        "Incorreta. Tempo seria 'Quando'."
+                    ]),
+                    Q("Na frase 'Houve muitos problemas', o verbo 'haver' está no singular porque:", ["Está no passado", "Concorda com 'problemas'", "É verbo impessoal (sentido de existir)", "É um erro gramatical", "Tem um sujeito oculto"], 2, 'Média', [
+                        "Incorreta. O tempo não determina a impessoalidade do número.",
+                        "Incorreta. Se concordasse, seria 'houveram' (o que é errado aqui).",
+                        "Correta. O verbo HAVER com sentido de EXISTIR não tem sujeito, portanto fica travado na 3ª pessoa do singular.",
+                        "Incorreta. A frase está gramaticalmente correta.",
+                        "Incorreta. A oração não tem sujeito."
+                    ]),
+                    Q("Em 'Eles RATIFICARAM a decisão', a palavra destacada significa:", ["Corrigiram", "Adiaram", "Confirmaram", "Anularam", "Suspenderam"], 2, 'Média', [
+                        "Incorreta. Corrigir é 'Retificar'.",
+                        "Incorreta.",
+                        "Correta. Ratificar significa confirmar, validar, reafirmar.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Qual palavra é formada por JUSTAPOSIÇÃO?", ["Desleal", "Infelizmente", "Aguardardente", "Guarda-chuva", "Pernilongo"], 3, 'Média', [
+                        "Incorreta. Derivação prefixal.",
+                        "Incorreta. Derivação prefixal e sufixal.",
+                        "Incorreta. Aglutinação (água+ardente = perda de letras).",
+                        "Correta. Guarda + Chuva. Uniram-se duas palavras sem perder nenhuma letra ou som (justapostas lado a lado).",
+                        "Incorreta. Aglutinação (perna+longa)."
+                    ])
+                ]
+            },
+
+            {
+                id: 3, dia: "Quarta-feira, 03/06/2026", disciplina: "Informática", tema: "Hardware, Windows e Redes", progresso: 37,
+                teoria: `<p class="drop-cap">A</p><p class="text-lg leading-relaxed mb-4">Informática básica é crucial para o Psicopedagogo elaborar relatórios, planejar intervenções e usar prontuários eletrônicos nas escolas ou UBS.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Memórias do PC</h4>
+                         <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><span class="keyword">RAM:</span> É Volátil! Perde tudo se a luz cair. É a área de trabalho do PC.</li>
+                            <li><span class="keyword">HD / SSD:</span> Não volátil. Guarda seus relatórios e PDFs permanentemente.</li>
+                            <li><span class="keyword">ROM:</span> Vem de fábrica (BIOS), você não apaga.</li>
+                         </ul>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Segurança e Redes</h4>
+                         <ul class="list-disc pl-6 space-y-2">
+                            <li><strong>Phishing:</strong> O famoso golpe de "pescaria" (e-mail falso do banco para roubar senha).</li>
+                            <li><strong>Ransomware:</strong> Malware que "sequestra" (criptografa) os arquivos da máquina e pede resgate.</li>
+                            <li><strong>Cco:</strong> No e-mail, significa Cópia Oculta. Esconde os endereços uns dos outros, vital para o sigilo dos pacientes/alunos.</li>
+                         </ul>`,
+                perolas: `<ul class="space-y-4"><li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Diferencie Navegador (Google Chrome, Firefox, Edge) de Buscador (Google, Bing). Chrome = Aplicativo. Google.com = Site/Mecanismo.</span></li></ul>`,
+                questoes: [
+                    Q("Memória que apaga tudo ao perder energia (Volátil):", ["HD", "SSD", "ROM", "RAM", "Pen drive"], 3, 'Fácil', "A memória RAM esvazia instantaneamente sem energia."),
+                    Q("Ataque que criptografa os arquivos e pede resgate em criptomoeda:", ["Phishing", "DDoS", "Ransomware", "Worm", "Trojan"], 2, 'Média', "Ransom significa resgate. É o golpe cibernético mais temido hoje."),
+                    Q("Ao enviar um e-mail com os laudos de várias escolas, como ocultar os destinatários para manter o sigilo ético?", ["Assunto", "Para", "Cc", "Cco", "Anexo"], 3, 'Fácil', "Cco (Cópia Carbono Oculta) garante que um destinatário não veja o e-mail do outro."),
+                    Q("Atalho no Windows para apagar arquivo sem enviá-lo para a Lixeira:", ["Alt+Del", "Shift+Delete", "Ctrl+X", "F2", "Win+L"], 1, 'Média', "Shift+Delete destrói o arquivo definitivamente."),
+                    Q("Dispositivo híbrido (Entrada e Saída simultânea de dados):", ["Teclado", "Mouse", "Monitor comum", "Tela Touchscreen", "Caixa de Som"], 3, 'Média', "Touchscreen permite ver (saída visual) e clicar com o dedo (entrada de comandos)."),
+                    Q("Extensão atual padrão do Microsoft Excel:", [".doc", ".xls", ".xlsx", ".pptx", ".pdf"], 2, 'Fácil', "O 'x' final (.xlsx) marca a versão XML mais moderna pós 2007."),
+                    Q("Rede privada que usa tecnologia da web, restrita apenas aos funcionários da Prefeitura/Escola:", ["Extranet", "Internet", "Intranet", "WAN", "PAN"], 2, 'Média', "Intranet é a rede local interna corporativa (pense em 'Intra' = dentro)."),
+                    Q("NÃO é um navegador web (Browser):", ["Mozilla Firefox", "Google Chrome", "Microsoft Edge", "Safari", "Google (Buscador)"], 4, 'Fácil', "Google (página) é o site de buscas, o Chrome é o software (navegador)."),
+                    Q("No Linux, o diretório raiz absoluto (topo da hierarquia) é representado por:", ["~ (Til)", "C:", "/ (Barra normal)", "\\ (Barra invertida)", "/root"], 2, 'Difícil', "A barra '/' (slash) é o equivalente ao C: do Windows, é a base de tudo no Linux."),
+                    Q("Ato de copiar a formatação (cor, fonte) de um texto no Word e aplicar em outro:", ["Ctrl+C", "Pincel de Formatação", "Marca-texto", "Borracha", "Negrito"], 1, 'Fácil', "O pincel clona a estética visual (formatação), não as palavras escritas."),
+                    Q("O 'S' no HTTPS indica:", ["Velocidade", "Protocolo seguro com criptografia", "Sistema fechado", "Sem vírus", "Servidor estadual"], 1, 'Fácil', "Secure. Usa camada SSL/TLS para proteger dados (senhas)."),
+                    Q("Função do Firewall:", ["Limpar pendrives", "Acelerar downloads", "Barreira que controla o tráfego de entrada e saída na rede", "Apagar spam", "Resfriar processador"], 2, 'Média', "Age como porteiro da rede, bloqueando conexões de portas perigosas."),
+                    Q("Atalho para 'Recortar' no Windows:", ["Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+Z", "Ctrl+P"], 2, 'Fácil', "O X lembra visualmente uma tesoura (recortar e tirar do lugar)."),
+                    Q("Serviço de Nuvem (Cloud Storage) da empresa Google:", ["OneDrive", "iCloud", "Dropbox", "Google Drive", "Azure"], 3, 'Fácil', "Drive é a nuvem nativa atrelada à conta Gmail/Google Workspace."),
+                    Q("Se você deletar um arquivo do Pen Drive conectado ao Windows, o que acontece?", ["Vai pra Lixeira", "Vai pra Nuvem", "Fica oculto", "É excluído permanentemente", "Vai pro disco C:"], 3, 'Difícil', "Por padrão, dispositivos removíveis menores (pen drives) não passam pela Lixeira do HD.")
+                ]
+            },
+
+            {
+                id: 4, dia: "Quinta-feira, 04/06/2026", disciplina: "Legislação Municipal", tema: "Lei Orgânica e Estatuto de Assunção", progresso: 50,
+                teoria: `<p class="drop-cap">A</p><p class="text-lg leading-relaxed mb-4">Lei Orgânica de Assunção traça as regras políticas, e o Estatuto dos Servidores rege a sua vida funcional como Psicopedagogo do município.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">A Lei Orgânica</h4>
+                         <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><strong>Poderes:</strong> Executivo (Prefeito) e Legislativo (Câmara). Não há Judiciário municipal.</li>
+                            <li><strong>Câmara:</strong> 09 Vereadores. Mesa diretora tem mandato de 2 anos, proibida a reeleição seguida para o mesmo cargo.</li>
+                            <li><strong>Sucessão:</strong> Se Prefeito e Vice caírem (vacância), assume o Presidente da Câmara.</li>
+                         </ul>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">O Estatuto do Servidor (Lei 147/2005)</h4>
+                         <ul class="list-disc pl-6 space-y-2">
+                            <li><strong>Provimento Originário:</strong> A Nomeação (via concurso).</li>
+                            <li><strong>Estágio Probatório:</strong> 3 anos (36 meses) para adquirir estabilidade.</li>
+                            <li><strong>Vacância:</strong> Exoneração (não é punição, é rompimento limpo) e Demissão (é punição severa).</li>
+                            <li><strong>Abandono de Cargo:</strong> Faltar mais de 30 dias consecutivos intencionalmente gera Demissão.</li>
+                         </ul>`,
+                perolas: `<ul class="space-y-4"><li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Atenção aos prazos! Posse em 30 dias após nomeação (prorrogáveis por mais 30). Prefeito veta projeto de lei em 15 dias úteis.</span></li></ul>`,
+                questoes: [
+                    Q("Os poderes do Município de Assunção, segundo a LOM, são:", ["Executivo e Judiciário", "Legislativo e Judiciário", "Executivo e Legislativo", "Prefeito, Governador, Presidente", "Apenas Executivo"], 2, 'Fácil', "Art 2º da LOM: Executivo e Legislativo, independentes e colaborativos."),
+                    Q("Quantos vereadores formam a Câmara de Assunção?", ["7", "9", "11", "15", "21"], 1, 'Fácil', "Art 5º da LOM fixa em 09 vereadores."),
+                    Q("Se Prefeito e Vice vagarem o cargo simultaneamente, quem assume a prefeitura?", ["Juiz da cidade", "Secretário de Educação", "Presidente da Câmara", "Vereador mais votado", "Interventor estadual"], 2, 'Média', "Na linha de sucessão, o Chefe do Legislativo assume o Executivo imediatamente."),
+                    Q("Prazo para o Prefeito sancionar ou vetar um projeto aprovado pela Câmara:", ["10 dias", "15 dias corridos", "15 dias úteis", "30 dias", "5 dias"], 2, 'Média', "15 dias úteis. O silêncio após esse prazo gera sanção tácita (aprovação automática)."),
+                    Q("Quórum exigido na Câmara para aprovar emenda à Lei Orgânica:", ["Maioria simples", "Maioria absoluta", "2/3 dos membros", "Unanimidade", "Plebiscito obrigatório"], 2, 'Difícil', "A LOM é a 'constituição' da cidade, sua alteração é rígida e exige aprovação de dois terços dos vereadores."),
+                    Q("Qual a forma originária de provimento no cargo público estatutário?", ["Reversão", "Readaptação", "Nomeação", "Reintegração", "Disponibilidade"], 2, 'Fácil', "A Nomeação é a porta de entrada via concurso. As outras formas são derivadas de vínculos que já existiam."),
+                    Q("O Psicopedagogo efetivo que sofre acidente e fica limitado fisicamente, sendo transferido para cargo/função compatível com sua nova condição, sofre o instituto da:", ["Readaptação", "Reversão", "Demissão", "Exoneração", "Férias compulsórias"], 0, 'Média', "A Readaptação ajusta o servidor a uma função que ele consiga exercer com sua capacidade física/mental atual."),
+                    Q("O estágio probatório para servidores de Assunção dura:", ["1 ano", "2 anos", "3 anos (36 meses)", "Até a posse", "Vitalício"], 2, 'Fácil', "Alinhado à Constituição Federal, são 3 anos de avaliação de desempenho."),
+                    Q("O que configura juridicamente 'Abandono de Cargo' (que resulta em Demissão)?", ["10 faltas seguidas", "15 faltas no ano", "30 faltas interpoladas", "Mais de 30 dias consecutivos de falta intencional", "30 minutos de atraso constante"], 3, 'Média', "Faltar 31 dias ou mais, em sequência, sem justificativa (animus abandonandi)."),
+                    Q("Duração da Licença Maternidade paga pelo município (piso legal):", ["60 dias", "90 dias", "120 dias", "180 dias", "6 meses exatos"], 2, 'Fácil', "O piso constitucional e estatutário básico é de 120 dias consecutivos."),
+                    Q("Se o cargo do servidor ESTÁVEL for extinto, o que lhe ocorre por direito?", ["Demissão sumária", "Fica em Disponibilidade com remuneração proporcional ao tempo de serviço", "Exoneração com FGTS", "Aposentadoria imediata integral", "Reversão"], 1, 'Difícil', "Como ele tem estabilidade, não perde o vínculo. Fica em casa em 'Disponibilidade', recebendo proporcional, até ser reaproveitado noutro órgão."),
+                    Q("Servidor demitido injustamente ganha a causa judicial e retorna ao cargo com todos os atrasados. Isso chama-se:", ["Readaptação", "Reintegração", "Reversão", "Recondução", "Nomeação"], 1, 'Média', "Reintegração (é a volta gloriosa do servidor injustiçado)."),
+                    Q("O servidor tomou POSSE, mas não entrou em exercício (não foi trabalhar) no prazo legal de 30 dias. Ele deve ser:", ["Demitido", "Exonerado de ofício", "Preso civilmente", "Suspenso", "Multado"], 1, 'Difícil', "Ele já é servidor (tomou posse), mas como não gerou infração trabalhando (para ser demitido), a lei determina a Exoneração (rompimento sem caráter punitivo)."),
+                    Q("Punição extrema para o servidor que atua como agiota (usura) na repartição pública:", ["Advertência", "Demissão", "Suspensão 10 dias", "Transferência", "Multa de 10%"], 1, 'Média', "Usura (agiotagem) no ambiente público é falta gravíssima que acarreta expulsão (demissão)."),
+                    Q("NÃO é uma penalidade disciplinar prevista no Estatuto Municipal:", ["Advertência", "Suspensão", "Demissão", "Transferência forçada de cidade como castigo", "Destituição de cargo em comissão"], 3, 'Fácil', "Transferência punitiva não existe no Direito Administrativo moderno.")
+                ]
+            },
+            
+            {
+                id: 5, dia: "Sexta-feira, 05/06/2026", disciplina: "História e Cultura de Assunção", tema: "Fundação, Política e Religiosidade", progresso: 62,
+                teoria: `<p class="drop-cap">A</p><p class="text-lg leading-relaxed mb-4">história de Assunção não segue o padrão comum do Nordeste colonial. Enquanto a maioria das cidades vizinhas nasceu de antigas fazendas de gado, Assunção nasceu como um entroncamento de estradas e comércio.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">O Surgimento (Estaca Zero)</h4>
+                         <p class="mb-3 text-slate-700">Na década de 1930, para combater a seca, o governo federal iniciou a construção de rodovias. No ponto onde a estrada de Campina Grande encontrava o ramal para Taperoá, foi fixada uma placa de topografia marcando o "Ponto Zero". O local passou a ser chamado de <strong>Estaca Zero</strong>.</p>
+                         <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><strong>José Pedro Diniz:</strong> Em 1939, montou a primeira "latada" (barraca coberta com lona) bem no triângulo da Estaca Zero para vender frutas e produtos da roça aos viajantes.</li>
+                            <li><strong>Pio Salvador de Maria:</strong> Em 1941, edificou a primeira construção de tijolos, uma casa-hotel que servia de apoio aos motoristas e tropeiros.</li>
+                         </ul>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Emancipação e Disputas</h4>
+                         <p class="mb-3 text-slate-700">A rodovia dividia o povoado: o lado Norte pertencia a Juazeirinho e o lado Sul a Taperoá. Em 1964, Estaca Zero conseguiu sua primeira emancipação, mas um Mandado de Segurança do prefeito de Taperoá no STF anulou a elevação em 1965, devolvendo-a à condição de distrito. A independência definitiva (Segunda Emancipação) só ocorreu em <strong>29 de abril de 1994</strong>, sancionada pelo então governador Cícero Lucena, após o povo votar "SIM" no plebiscito de 15 de novembro de 1993.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Identidade e Ameaça ao Nome</h4>
+                         <p class="mb-3 text-slate-700">O nome "Assunção" ganhou força em 1959, sugerido por <strong>Frei Damião</strong>, que considerava "Estaca Zero" um nome de atraso/estagnação. O nome homenageia a padroeira, Nossa Senhora da Assunção. Houve um episódio crítico onde o escritor Ariano Suassuna e seu pai tentaram mudar o nome do distrito para "Presidente Suassuna" (pois a estrada foi feita no governo do pai dele). A população e a igreja se uniram, vaiaram os Suassuna e impediram a mudança, consolidando a identidade local.</p>`,
+                perolas: `<ul class="space-y-4"><li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Dica de Prova: A banca pode tentar confundir a origem. Lembre-se: Assunção <strong>NÃO</strong> nasceu de uma sesmaria de gado, mas sim do <strong>comércio em um entroncamento rodoviário</strong> e da ferrovia.</span></li></ul>`,
+                questoes: [
+                    Q("Diferente da maioria das cidades do Cariri paraibano, que nasceram de antigas fazendas de gado, o surgimento de Assunção está ligado a:", ["Um quilombo de escravos fugidos.", "Uma antiga aldeia indígena dos Tabajaras.", "Uma missão jesuítica de catequização.", "Um entroncamento de estradas e comércio local.", "Uma mina de extração de ouro no século XVIII."], 3, 'Fácil', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. A cidade nasceu ao redor da placa do marco zero da estrada para Taperoá, focada no comércio para viajantes.",
+                        "Incorreta."
+                    ]),
+                    Q("O primeiro nome do povoado que deu origem à atual cidade de Assunção foi:", ["Vila da Borborema", "Estaca Zero", "Nova Taperoá", "Presidente Suassuna", "Santo André"], 1, 'Fácil', [
+                        "Incorreta.",
+                        "Correta. Referência à estaca topográfica do ramal rodoviário.",
+                        "Incorreta.",
+                        "Incorreta. Este foi um nome rejeitado pela população.",
+                        "Incorreta."
+                    ]),
+                    Q("Quem é considerado o construtor da primeira 'latada' (barraca) comercial no marco zero, dando início à movimentação econômica do local em 1939?", ["João Martiniano", "Ariano Suassuna", "José Pedro Diniz", "Pio Salvador de Maria", "Balduíno Balbino"], 2, 'Média', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. José Pedro Diniz montou a barraca de lonas para vender produtos da roça.",
+                        "Incorreta. Pio Salvador edificou a primeira casa de alvenaria (hotel), mas a latada pioneira foi de Diniz.",
+                        "Incorreta."
+                    ]),
+                    Q("A primeira edificação de alvenaria, construída em 1941 para servir de casa-hotel aos viajantes, foi erguida por:", ["José Pedro Diniz", "Pio Salvador de Maria", "Frei Damião", "Manoel Marcionilo", "Cícero Lucena"], 1, 'Fácil', [
+                        "Incorreta.",
+                        "Correta. Pio Salvador de Maria construiu a primeira edificação definitiva de tijolos no povoado.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Antes da emancipação definitiva, o povoado era cortado por uma estrada que dividia sua jurisdição entre dois municípios. Eram eles:", ["Campina Grande e Patos", "Soledade e Pocinhos", "Taperoá e Juazeirinho", "Salgadinho e Junco do Seridó", "Teixeira e Desterro"], 2, 'Média', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. A estrada dividia o povoado: a parte Sul pertencia a Taperoá e a parte Norte a Juazeirinho.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("O que ocorreu com Assunção logo após sua PRIMEIRA emancipação política em 1964?", ["Foi anexada a Campina Grande.", "Tornou-se a capital da Paraíba por um dia.", "Seu território foi inundado por um açude.", "Voltou à condição de distrito em 1965 devido a um Mandado de Segurança judicial impetrado por Taperoá.", "Mudou de nome para Estaca Zero novamente."], 3, 'Difícil', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. O prefeito vizinho entrou no STF alegando perdas e a cidade perdeu seu status em 1965, voltando a ser distrito.",
+                        "Incorreta."
+                    ]),
+                    Q("Qual figura religiosa foi fundamental na sugestão para a mudança do nome de 'Estaca Zero' para 'Assunção' no ano de 1959, alegando que o nome antigo indicava 'estagnação'?", ["Padre Cícero", "Frei Damião", "Dom Hélder Câmara", "Bispo Edir Macedo", "Papa João Paulo II"], 1, 'Média', [
+                        "Incorreta.",
+                        "Correta. Em uma visita missionária, Frei Damião sugeriu o nome da padroeira local (Nossa Senhora da Assunção) para substituir Estaca Zero.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("No passado, houve uma tentativa política de mudar o nome do distrito para 'Presidente Suassuna'. Como a população reagiu?", ["Aceitou pacificamente com festas.", "Aprovou em plebiscito oficial.", "Rejeitou com protestos, vaias e cartazes, liderados por religiosos locais.", "Demoliu o mercado público em retaliação.", "Exigiu que o nome fosse 'Ariano Suassuna'."], 2, 'Fácil', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. A população, apoiada pelo padre local, rechaçou a tentativa do escritor Ariano Suassuna de homenagear seu pai, defendendo o nome da padroeira.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("A Emancipação Política definitiva de Assunção ocorreu mediante a Lei Estadual sancionada pelo Governador Cícero Lucena na data de:", ["15 de novembro de 1993", "01 de janeiro de 1997", "29 de abril de 1994", "30 de agosto de 2026", "05 de outubro de 1988"], 2, 'Média', [
+                        "Incorreta. Esta foi a data do Plebiscito Popular.",
+                        "Incorreta.",
+                        "Correta. A lei n° 5.895 que criou o município de Assunção de forma definitiva foi assinada em 29 de abril de 1994.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("O Plebiscito que consultou a população sobre a vontade de emancipar (ou não) o município ocorreu em qual data simbólica?", ["07 de setembro de 1992", "15 de novembro de 1993 (Proclamação da República)", "25 de dezembro de 1990", "01 de maio de 1994", "24 de junho de 1993"], 1, 'Média', [
+                        "Incorreta.",
+                        "Correta. O plebiscito onde o povo votou majoritariamente 'SIM' para a independência ocorreu no feriado de 15 de novembro de 1993.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Sobre a presença da ferrovia na história de Assunção, é correto afirmar que:", ["O trem nunca passou pela cidade, sendo um mito local.", "A estação ferroviária de Estaca Zero, concluída nos anos 1950, foi vital para o transporte regional.", "Apenas trens-bala circularam na cidade.", "A ferrovia foi destruída pelos Suassuna.", "A ferrovia transportava apenas ouro da mineração."], 1, 'Média', [
+                        "Incorreta.",
+                        "Correta. A estação impulsionou o escoamento agrícola e o transporte de passageiros.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("A economia histórica de Assunção baseou-se fortemente no comércio e agropecuária. Nos dias atuais, uma nova matriz econômica de mineração ganhou destaque no município. Que minério é esse?", ["Petróleo", "Urânio", "Caulim", "Carvão Mineral", "Diamante"], 2, 'Difícil', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. A extração de Caulim tem gerado forte movimentação econômica e empregos na região atualmente.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Um marco forte da cultura contemporânea de Assunção, criado durante a gestão do então prefeito de Taperoá (Lula de Mandú) e que se tornou tradição gigantesca na cidade é:", ["O Desfile das Escolas de Samba.", "A Festa de São Pedro (festa junina fora de época).", "O Festival de Inverno de Jazz.", "A Corrida de Jegues de Estaca Zero.", "O Círio de Nazaré."], 1, 'Fácil', [
+                        "Incorreta.",
+                        "Correta. O 'São Pedro de Assunção' consolidou-se como a maior festividade cultural da cidade, atraindo multidões.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Historicamente, a primeira fonte de energia/iluminação pública do povoado (década de 1950), antes de se interligar à rede elétrica estadual, funcionava através de:", ["Usinas nucleares portáteis.", "Lampiões a óleo de baleia em cada esquina.", "Um motor a diesel que gerava energia no início da noite.", "Moinhos de vento holandeses.", "Placas solares doadas pela ONU."], 2, 'Média', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. A energia era gerada por um motor local que funcionava apenas das 18h às 22h.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Tribo indígena que habitava a região do Cariri paraibano (incluindo as terras onde hoje é Assunção) antes da colonização europeia:", ["Tupinambás", "Guaranis", "Ianomâmis", "Sucurus (Nação Tarairiu/Cariri)", "Pataxós"], 3, 'Difícil', [
+                        "Incorreta. Habitavam áreas litorâneas.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. Os Sucurus faziam parte dos grandes grupos Tapuias/Cariris que dominavam o semiárido da Paraíba.",
+                        "Incorreta."
+                    ])
+                ]
+            },
+
+            {
+                id: 6, dia: "Sábado, 06/06/2026", disciplina: "Específicos - Psicopedagogia", tema: "Transtornos, Avaliação e Inclusão", progresso: 75,
+                teoria: `<p class="drop-cap">A</p><p class="text-lg leading-relaxed mb-4">prática psicopedagógica exige diferenciar o que é uma <strong>Dificuldade de Aprendizagem</strong> (fator externo, emocional, pedagógico) de um <strong>Transtorno Específico de Aprendizagem</strong> (origem neurobiológica).</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-emerald-900 border-l-4 border-emerald-500 pl-3">Transtornos Comuns na Escola</h4>
+                         <ul class="list-disc pl-6 space-y-2 mb-6">
+                            <li><span class="keyword text-rose-800 bg-rose-100">Dislexia:</span> Dificuldade neurobiológica no reconhecimento fluente da palavra, leitura e decodificação (troca letras como P/B, V/F).</li>
+                            <li><span class="keyword">Discalculia:</span> Severa dificuldade no processamento numérico, cálculo e senso de quantidade.</li>
+                            <li><span class="keyword">TDAH:</span> Transtorno do Déficit de Atenção com Hiperatividade. Afeta funções executivas (foco, controle inibitório). Não é preguiça.</li>
+                         </ul>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Educação Inclusiva e Legislação</h4>
+                         <p class="mb-3 text-slate-700">A <strong>Inclusão</strong> (diferente de Integração) exige que a <em>escola</em> se adapte ao aluno, e não o aluno à escola. A LDB (9.394/96) assegura o Atendimento Educacional Especializado (AEE), preferencialmente na rede regular de ensino.</p>
+                         <h4 class="text-xl font-bold mt-6 mb-3 text-indigo-900 border-l-4 border-indigo-500 pl-3">Diagnóstico Psicopedagógico</h4>
+                         <p>É um processo de investigação. Na clínica utiliza ferramentas como a EOCA (Entrevista Operativa Centrada na Aprendizagem), Anamnese (com pais), provas piagetianas e testes projetivos. O objetivo é entender a relação do sujeito com o objeto de conhecimento.</p>`,
+                perolas: `<ul class="space-y-4">
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>Atenção: A Dislexia <strong>não tem cura</strong> (é condição neurológica permanente), mas requer <strong>intervenção psicopedagógica e adaptação</strong> (ex: mais tempo para provas, provas orais).</span></li>
+                            <li class="flex gap-3"><i class="ph-fill ph-warning text-amber-500 text-xl shrink-0"></i> <span>O Psicopedagogo <strong>NÃO</strong> prescreve Ritalina/medicamentos para o TDAH. Isso é ato médico (Neuropediatra/Psiquiatra). O psicopedagogo faz a investigação clínica/escolar e o encaminhamento.</span></li>
+                          </ul>`,
+                questoes: [
+                    Q("Na avaliação psicopedagógica, a ferramenta inicial que permite observar o vínculo do sujeito com os objetos de aprendizagem em um ambiente lúdico e livre, proposta por Jorge Visca, é a:", ["Prova de Rorschach.", "Anamnese medicamentosa.", "EOCA (Entrevista Operativa Centrada na Aprendizagem).", "Eletroencefalograma (EEG).", "Escala Wechsler de Inteligência (WISC)."], 2, 'Média', [
+                        "Incorreta. Teste psicológico projetivo.",
+                        "Incorreta.",
+                        "Correta. A EOCA é o primeiro instrumento psicopedagógico (consigna: 'gostaria que você me mostrasse o que sabe fazer').",
+                        "Incorreta. Exame neurológico médico.",
+                        "Incorreta. Teste psicológico."
+                    ]),
+                    Q("João, 8 anos, apresenta inteligência normal, porém tem extrema lentidão na leitura, troca rotineiramente letras como 't' por 'd' e 'f' por 'v', e sua compreensão textual é prejudicada pelo gasto de energia para decodificar palavras. Este quadro é sugestivo de:", ["Deficiência Intelectual severa.", "Transtorno do Espectro Autista (TEA).", "Dislexia.", "Surdez profunda.", "Discalculia."], 2, 'Fácil', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. O quadro clássico de déficit fonológico, lentidão e trocas de letras semelhantes na leitura remete fortemente à Dislexia.",
+                        "Incorreta.",
+                        "Incorreta. Discalculia afeta a matemática."
+                    ]),
+                    Q("No contexto da inclusão educacional, a Lei de Diretrizes e Bases da Educação Nacional (LDB 9.394/96) determina que o Atendimento Educacional Especializado (AEE) para educandos com deficiência, transtornos globais e superdotação deve ocorrer:", ["Em escolas e classes exclusivas para pessoas com deficiência.", "Somente em clínicas médicas terceirizadas.", "Preferencialmente na rede regular de ensino.", "Na residência do aluno de forma domiciliar compulsória.", "Em instituições religiosas de caridade."], 2, 'Fácil', [
+                        "Incorreta. A lei não prioriza segregação.",
+                        "Incorreta.",
+                        "Correta. A LDB dita a Inclusão no ensino comum sempre que possível (Art. 58).",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Sobre a diferença entre Dificuldade de Aprendizagem e Transtorno de Aprendizagem, é correto afirmar:", ["São sinônimos exatos, não havendo diferença clínica.", "A Dificuldade tem origem sempre neurobiológica (genética), enquanto o Transtorno é causado por preguiça.", "A Dificuldade pode ser transitória, causada por fatores externos (pedagógicos, emocionais, familiares); o Transtorno tem origem neurobiológica e acompanha o indivíduo pela vida.", "Ambos são curados rapidamente com uso de medicamentos tarja preta.", "Nenhum dos dois permite intervenção do psicopedagogo."], 2, 'Média', [
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Correta. Essa diferenciação é o coração do diagnóstico. Transtorno (ex: Dislexia) é orgânico/involuntário. Dificuldade (ex: não aprender divisão por falta de base pedagógica ou luto familiar) é reativo e transitório.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("Criança com TDAH (Transtorno do Déficit de Atenção e Hiperatividade) na sala de aula. Qual a melhor adaptação metodológica orientada pelo psicopedagogo?", ["Colocar a criança no fundo da sala para não distrair os outros.", "Fornecer provas três vezes mais longas para forçá-la a focar.", "Fracionar as atividades em tarefas menores e permitir curtas pausas para movimento físico.", "Excluir o aluno das aulas de matemática e português.", "Reprová-la automaticamente para forçar o amadurecimento cerebral."], 2, 'Difícil', [
+                        "Incorreta. O fundo da sala tem mais estímulos e a tira do radar do professor.",
+                        "Incorreta. Ela já tem déficit de atenção, não vai tolerar testes gigantes.",
+                        "Correta. Atividades parceladas ajudam as funções executivas fragilizadas, e as pausas drenam a hiperatividade.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("As Provas Operatórias ou Piagetianas são frequentemente utilizadas na clínica psicopedagógica com o intuito primário de:", ["Avaliar o Quociente de Inteligência (QI) de forma exata.", "Medir a velocidade de leitura silábica por minuto.", "Analisar o nível cognitivo e o raciocínio lógico (conservação, seriação, classificação).", "Descobrir se a criança sofreu abuso sexual.", "Fazer diagnóstico oftalmológico."], 2, 'Média', [
+                        "Incorreta. Provas piagetianas não medem QI.",
+                        "Incorreta.",
+                        "Correta. Servem para verificar em qual estágio do desenvolvimento mental (ex: conservação de massa/líquido) o sujeito se encontra.",
+                        "Incorreta.",
+                        "Incorreta."
+                    ]),
+                    Q("O Transtorno do Espectro Autista (TEA) impacta diretamente o ambiente escolar. Dentre os sintomas característicos que o psicopedagogo deve observar, destacam-se:", ["Dificuldade persistente na comunicação e interação social, além de padrões de comportamento restritos e repetitivos.", "Apenas tiques nervosos motores nas pernas.", "Cegueira e surdez congênitas absolutas.", "Gênio superdotado para artes sempre presente.", "Vontade de manipular os professores com mentiras elaboradas."], 0, 'Fácil', [
+                        "Correta. A base do TEA (DSM-5) envolve a díade: falha na comunicação/interação e interesses restritos/estereotipias.",
+                        "Incorreta.",
+                        "Incorreta.",
+                        "Incorreta. Superdotação não é regra no TEA.",
+                        "Incorreta."
+                    ])
+                ]
+            },
+
+            {
+                id: 7, dia: "Domingo, 07/06/2026", disciplina: "Super Revisão", tema: "O Grande Aulão de Véspera", progresso: 87,
+                teoria: `<div class="space-y-6">
+                            <div class="bg-indigo-900 text-white p-8 rounded-3xl shadow-xl">
+                                <h3 class="text-3xl font-black mb-4 flex items-center gap-3"><i class="ph-fill ph-rocket-launch text-emerald-400 text-4xl"></i> Aulão: Revisão Tática (Psicopedagogo)</h3>
+                                <p class="text-indigo-100 text-lg mb-6">Aqui condensamos os pilares da sua aprovação. Memorize estes gatilhos para o simulado final.</p>
+                                
+                                <div class="grid md:grid-cols-2 gap-6">
+                                    <div class="bg-white/10 p-5 rounded-2xl border border-white/20">
+                                        <h4 class="font-bold text-amber-300 text-xl mb-2">1. Teorias Clássicas</h4>
+                                        <ul class="list-disc pl-5 space-y-1 text-sm text-indigo-50">
+                                            <li><strong>Piaget (Epistemologia Genética):</strong> Estágios (Sensório-motor, Pré-operatório, Concreto, Formal). Aprendizagem ocorre por Assimilação e Acomodação = Equilibração.</li>
+                                            <li><strong>Vygotsky (Sociointeracionismo):</strong> ZDP (Zona de Desenvolvimento Proximal). O aprendizado promove o desenvolvimento. Foco no papel social e linguagem.</li>
+                                            <li><strong>Wallon:</strong> Afetividade, emoção e movimento. O ser humano não se divide.</li>
+                                            <li><strong>Ausubel:</strong> Aprendizagem Significativa ancorada no conhecimento prévio (subsunçores).</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white/10 p-5 rounded-2xl border border-white/20">
+                                        <h4 class="font-bold text-blue-300 text-xl mb-2">2. Inclusão, Transtornos e LDB</h4>
+                                        <ul class="list-disc pl-5 space-y-1 text-sm text-indigo-50">
+                                            <li><strong>Dislexia x Discalculia:</strong> Dislexia (Leitura/escrita, neurobiológico, sem cura). Discalculia (Numérico).</li>
+                                            <li><strong>TDAH:</strong> Transtorno neurobiológico (desatenção, hiperatividade, impulsividade). Psicopedagogo não dá remédio, faz adaptação.</li>
+                                            <li><strong>LDB:</strong> AEE deve ser <em>preferencialmente</em> na rede regular de ensino. Inclusão é a escola se adaptar ao aluno.</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white/10 p-5 rounded-2xl border border-white/20">
+                                        <h4 class="font-bold text-emerald-300 text-xl mb-2">3. Português & Informática</h4>
+                                        <ul class="list-disc pl-5 space-y-1 text-sm text-indigo-50">
+                                            <li><strong>Proparoxítonas:</strong> Todas têm acento (MÁ-qui-na).</li>
+                                            <li><strong>Verbo Haver:</strong> Sentido de 'existir' fica no singular (Havia crianças).</li>
+                                            <li><strong>Hardware/Nuvem:</strong> RAM (apaga tudo). Nuvem (Drive/OneDrive - dados na web). Phishing (Roubo por engano). Cco (Email Oculto).</li>
+                                        </ul>
+                                    </div>
+                                    <div class="bg-white/10 p-5 rounded-2xl border border-white/20">
+                                        <h4 class="font-bold text-rose-300 text-xl mb-2">4. Legislação de Assunção/PB</h4>
+                                        <ul class="list-disc pl-5 space-y-1 text-sm text-indigo-50">
+                                            <li><strong>LOM e Estatuto:</strong> 2 Poderes (Exec/Legis). 9 vereadores. Veto em 15 dias úteis. Estágio probatório de 3 anos. Abandono de cargo após 30 dias de falta.</li>
+                                            <li><strong>História:</strong> Estaca Zero da estrada. Comércio de Zé Pedro Diniz. Emancipada de vez em 1994 (após plebiscito de 1993). Rejeição ao nome Presidente Suassuna.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                         </div>`,
+                perolas: "",
+                questoes: [
+                    // PSICOPEDAGOGIA - 7 Qs
+                    Q("Qual pensador defende que a aprendizagem puxa (antecede) o desenvolvimento e que a Zona de Desenvolvimento Proximal é o palco das intervenções?", ["Jean Piaget", "Henri Wallon", "Lev Vygotsky", "Paulo Freire", "B. F. Skinner"], 2, 'Fácil', "Vygotsky focou fortemente no aspecto social e na intervenção do par mais capaz (ZDP)."),
+                    Q("A Dislexia é categorizada pedagogicamente e clinicamente como:", ["Uma dificuldade passageira causada por mães ausentes.", "Um Transtorno Específico de Aprendizagem de origem neurobiológica.", "Um sintoma clássico de deficiência intelectual severa.", "Um déficit visual no nervo óptico.", "Preguiça extrema diagnosticada no DSM-5."], 1, 'Média', "É um transtorno neurobiológico persistente que afeta o reconhecimento de palavras e fluência."),
+                    Q("A função do psicopedagogo INSTITUCIONAL na escola é:", ["Fazer terapia psicanalítica das crianças.", "Distribuir Ritalina com autorização do diretor.", "Atuar preventivamente junto ao corpo docente, PPP e dinâmicas escolares para evitar o fracasso.", "Dar aulas de reforço de matemática apenas.", "Demita professores ruins."], 2, 'Fácil', "Foco institucional é preventivo, sistêmico e assessor, não clínico-terapêutico isolado."),
+                    Q("Processo piagetiano onde a criança ajusta/modifica seus esquemas mentais para incorporar algo novo que não cabia no esquema antigo:", ["Acomodação", "Assimilação", "Reforço", "Catarse", "Recalque"], 0, 'Média', "Acomodar é abrir espaço, modificar a própria estrutura de pensamento."),
+                    Q("A EOCA (Entrevista Operativa Centrada na Aprendizagem) serve basicamente para:", ["Testar o nível de leitura por minuto.", "Diagnosticar Autismo rapidamente.", "Investigar como a criança se relaciona/vincula com o aprender e os materiais.", "Medir a coordenação motora grossa no esporte.", "Avaliar a visão noturna."], 2, 'Difícil', "Ferramenta de Jorge Visca para ver as defesas e bloqueios afetivos e cognitivos frente à aprendizagem."),
+                    Q("O Estatuto da Criança e do Adolescente (ECA) garante à criança:", ["O trabalho infantil a partir dos 10 anos.", "Castigos físicos moderados na escola.", "Direito à educação, visando pleno desenvolvimento e preparo para a cidadania.", "Ensino fundamental pago.", "Direito de abandonar a escola aos 12 anos."], 2, 'Fácil', "A educação é direito inalienável garantido pelo Art 53 do ECA."),
+                    Q("Um aluno com TDAH possui, fundamentalmente, déficits em quais áreas neurocognitivas?", ["Funções executivas (foco, controle inibitório e memória de trabalho).", "Visão e audição periférica.", "Cordas vocais e fala.", "Aparelho digestório e metabolismo.", "Força muscular e equilíbrio ósseo."], 0, 'Média', "O TDAH afeta o córtex pré-frontal, prejudicando o freio inibitório e o planejamento (funções executivas)."),
+                    
+                    // LEGISLAÇÃO E HISTÓRIA - 7 Qs
+                    Q("Assunção nasceu politicamente de qual povoado e devido a qual principal infraestrutura?", ["Forte militar de Santa Cruz", "Quilombo do Cariri", "Estaca Zero, devido ao entroncamento rodoviário", "Redução jesuítica de Taperoá", "Vila Imperial do Gado"], 2, 'Média', "O nome original era Estaca Zero, nascido na bifurcação das estradas."),
+                    Q("Quem é historicamente reconhecido por construir a primeira 'latada' de comércio no local em 1939?", ["Luiz Waldvogel", "José Pedro Diniz", "Manoel Marcionilo", "Ariano Suassuna", "Cícero Lucena"], 1, 'Fácil', "Diniz montou a latada de lona, iniciando o comércio."),
+                    Q("Como o povo reagiu à tentativa de alterar o nome de Assunção para 'Presidente Suassuna'?", ["Aceitou com festa", "Fez plebiscito a favor", "Rejeitou com protestos defendendo o nome da padroeira", "Ficou indiferente", "Construiu estátua"], 2, 'Média', "A população repudiou a mudança, mantendo o nome Assunção."),
+                    Q("Se o cargo do psicopedagogo concursado e estável for extinto, ele vai para:", ["Rua (Demitido)", "Exoneração a pedido", "Reversão", "Disponibilidade remunerada proporcional", "Pensão"], 3, 'Difícil', "Fica em disponibilidade recebendo salário proporcional até arrumar outro posto."),
+                    Q("Faltar 35 dias consecutivos intencionalmente gera punição máxima de:", ["Advertência", "Suspensão", "Férias", "Demissão por Abandono de Cargo", "Exoneração a pedido"], 3, 'Fácil', "Abandono de cargo gera demissão no serviço público municipal."),
+                    Q("A Câmara é composta por quantos vereadores em Assunção?", ["9", "11", "15", "5", "7"], 0, 'Fácil', "Assunção tem 9 vereadores em sua lei orgânica."),
+                    Q("A emancipação política definitiva do município ocorreu em 1994, ratificando a vontade popular expressa em um Plebiscito no ano de:", ["1988", "1990", "1993", "2000", "2010"], 2, 'Média', "O povo votou SIM no plebiscito de 15 de novembro de 1993."),
+                    
+                    // PORTUGUÊS - 7 Qs
+                    Q("Qual palavra é proparoxítona?", ["Caju", "Saúde", "Dígrafo", "Lápis", "Amor"], 2, 'Fácil', "DÍ-gra-fo. Antepenúltima sílaba tônica, logo acentuada."),
+                    Q("Dígrafo que NUNCA se separa na divisão silábica:", ["SS", "RR", "XC", "LH", "SC"], 3, 'Média', "CH, LH, NH formam um bloco inseparável."),
+                    Q("A frase 'Eles HOUVERAM um problema' está gramaticalmente:", ["Correta", "Errada, o verbo haver no sentido de existir fica 'houve'", "Certa se for no passado", "Falta vírgula", "Nenhuma"], 1, 'Média', "Haver no sentido de existir é impessoal. O certo é 'Houve problemas'."),
+                    Q("O que é Polissemia?", ["Palavras opostas", "Uma palavra com vários sentidos", "Palavras que soam iguais", "Erro de gramática", "Repetição"], 1, 'Fácil', "Múltiplos significados da mesma palavra dependendo do contexto."),
+                    Q("Qual alternativa traz um hipônimo de MÓVEL?", ["Animal", "Cadeira", "Eletrodoméstico", "Madeira", "Plástico"], 1, 'Difícil', "Cadeira é um item contido no grande grupo (Hiperônimo) dos Móveis."),
+                    Q("Plural correto de Guarda-Chuva:", ["Guarda-chuvas", "Guardas-chuvas", "Guardas-chuva", "Guardo-chuvas", "Guardes-chuvas"], 0, 'Média', "Em Verbo + Substantivo, apenas o substantivo vai ao plural."),
+                    Q("Qual a classe gramatical de 'MUITO' na frase: Ele comeu MUITO.", ["Substantivo", "Advérbio de intensidade", "Adjetivo", "Artigo", "Preposição"], 1, 'Fácil', "Modifica a intensidade do verbo comer."),
+                    
+                    // INFORMÁTICA - 7 Qs
+                    Q("Memória RAM é definida tecnicamente como:", ["De armazenamento em massa", "Volátil e de trabalho temporário", "De fábrica (BIOS)", "Ótica", "Lenta e física"], 1, 'Fácil', "Sem energia (desligou o PC), ela apaga tudo que estava aberto."),
+                    Q("Shift + Delete serve para:", ["Copiar", "Renomear", "Excluir arquivo permanentemente, pulando a lixeira", "Desfazer", "Colar"], 2, 'Média', "Exclusão direta e irreversível de forma fácil."),
+                    Q("Ransomware faz o quê no computador da escola?", ["Grava o teclado", "Derruba o servidor com acessos", "Criptografa (tranca) os dados exigindo resgate", "Coloca anúncios chatos", "Muda o relógio e fuso horário"], 2, 'Fácil', "É o famoso sequestro cibernético de arquivos."),
+                    Q("Dispositivo considerado híbrido (Entrada/Saída):", ["Monitor antigo tubo", "Impressora 3D", "Pendrive", "Caixa de som", "Microfone isolado"], 2, 'Média', "Pen drive insere (lê) e retira (grava) arquivos do PC."),
+                    Q("Extensão do PowerPoint moderno (após 2007):", [".doc", ".xlsx", ".pptx", ".mp3", ".pdf"], 2, 'Fácil', ".pptx (o 'x' significa padrão XML)."),
+                    Q("Intranet é o quê?", ["Rede pública municipal", "Cabo físico azul", "Rede privada corporativa que usa protocolos da internet", "Site de busca de leis", "Aplicativo do banco do Brasil"], 2, 'Média', "É uma internet fechada apenas para os funcionários do local."),
+                    Q("Campo de e-mail usado para esconder remetentes (protegendo a privacidade dos alunos):", ["Para", "Cc", "Cco", "Anexos", "Assunto"], 2, 'Fácil', "Cópia Carbono Oculta blinda a lista de contatos dos outros receptores.")
+                ]
+            },
+
+            {
+                id: 8, dia: "Domingo, 08/06/2026", disciplina: "Simulado Master", tema: "Aferição Geral Padrão Ápice (50 Questões)", progresso: 100,
+                teoria: `<div class="bg-slate-900 rounded-3xl p-10 text-center text-white border border-slate-700 shadow-2xl relative overflow-hidden">
+                            <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-emerald-900/50 mix-blend-overlay"></div>
+                            <div class="relative z-10">
+                                <i class="ph-duotone ph-target text-7xl text-emerald-400 mb-6 inline-block animate-pulse"></i>
+                                <h3 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">Simulado Oficial</h3>
+                                <p class="text-indigo-200 text-xl font-medium max-w-2xl mx-auto">Esta é a simulação final do seu concurso para Psicopedagogo de Assunção. Foco total, leia com calma e justifique cada erro.</p>
+                            </div>
+                         </div>`,
+                perolas: "",
+                questoes: [
+                    // --- PORTUGUÊS (10 Questões - Amostra reduzida p/ performance do app, simulando peso real) ---
+                    Q("Marque a opção com DÍGRAFO consonantal e ENCONTRO consonantal, respectivamente:", ["Chuva / Pneu", "Massa / Ninho", "Passo / Carro", "Caixa / Prato", "Ritmo / Atlas"], 0, 'Média', "CH (duas letras, um som) é dígrafo. PN (duas consoantes que soam separadas) é encontro."),
+                    Q("Em 'Vende-se casas novas na orla', o erro gramatical encontra-se em:", ["Omitir a crase.", "Uso indevido do adjetivo.", "Erro de regência.", "Falta de concordância verbal com o sujeito paciente.", "Uso do hífen."], 3, 'Difícil', "O 'se' é partícula apassivadora. 'Casas novas' é o sujeito no plural. O verbo OBRIGATORIAMENTE vai pro plural: Vendem-se casas."),
+                    Q("Palavra que segue a mesma regra de acentuação de 'ÁRVORE':", ["Herói", "Júri", "Mecânico", "Amável", "Lápis"], 2, 'Fácil', "Árvore e Mecânico são ambas Proparoxítonas e todas são acentuadas."),
+                    Q("Classe gramatical de LENTAMENTE na frase 'Ele aprende LENTAMENTE':", ["Substantivo", "Adjetivo", "Pronome", "Advérbio de modo", "Preposição"], 3, 'Fácil', "O sufixo '-mente' cria um Advérbio que modifica a forma do verbo aprender."),
+                    Q("Na frase 'Houve várias notificações de déficit', a justificativa para o verbo no singular é:", ["O tempo está no passado.", "Trata-se de verbo impessoal com sentido de existir.", "A banca cometeu um erro de digitação.", "O sujeito está oculto.", "Concorda com o advérbio."], 1, 'Média', "Haver no sentido de existir é impessoal e fica travado no singular."),
+                    Q("Ocorre crase corretamente em:", ["Fui a Roma e andei a pé.", "Pagamos a prazo a fatura.", "Refiro-me à professora da turma.", "Ela começou a gritar alto.", "Vou a Bahia amanhã."], 2, 'Média', "O verbo 'referir-se' exige preposição 'a'. A palavra 'professora' admite o artigo 'a'. (à professora)."),
+                    Q("Antônimo de ALTRUÍSTA:", ["Solidário", "Bondoso", "Egoísta", "Honesto", "Falso"], 2, 'Fácil', "Altruísta é quem pensa no outro. O antônimo (oposto) é o egoísta."),
+                    Q("Em 'A criança, QUE mora ali, ficou doente', a vírgula indica oração:", ["Sujeito oculto", "Subordinada adjetiva restritiva", "Subordinada adjetiva explicativa", "Vocativo", "Aposto"], 2, 'Média', "Com vírgulas, a oração do 'QUE' está generalizando/explicando. Sem vírgulas seria restritiva."),
+                    Q("Cessão, Seção e Sessão são exemplos clássicos de:", ["Parônimos", "Sinônimos", "Homônimos homófonas", "Hiperônimos", "Antônimos"], 2, 'Fácil', "Homófonas: Possuem o mesmíssimo som, mas escrita e sentidos diferentes."),
+                    Q("Formação da palavra DESLEAL:", ["Sufixal", "Parassintética", "Justaposição", "Derivação Prefixal", "Aglutinação"], 3, 'Fácil', "Adicionou-se o prefixo 'DES-' à palavra primitiva 'Leal'."),
+
+                    // --- LEGISLAÇÃO E HISTÓRIA MUNICIPAL (10 Questões) ---
+                    Q("LOM de Assunção: O prazo que o Prefeito tem para aplicar o VETO a uma lei da Câmara é de:", ["5 dias corridos", "10 dias úteis", "15 dias úteis", "30 dias úteis", "Ele não pode vetar"], 2, 'Média', "Art 36 da LOM crava que o Prefeito tem 15 dias úteis. Silêncio = aprovação tácita."),
+                    Q("História Local: Quem é considerado o construtor da primeira residência de alvenaria e hotel no povoado de Estaca Zero (1941)?", ["Ariano Suassuna", "Pio Salvador de Maria", "Frei Damião", "José Pedro Diniz", "Manoel Marcionilo"], 1, 'Média', "Pio Salvador edificou a primeira casa de tijolos (hotel). Zé Diniz foi o da barraca de lona."),
+                    Q("Estatuto: Faltar ao serviço por 35 dias consecutivos de forma intencional acarreta legalmente:", ["Multa na folha", "Suspensão de 30 dias", "Transferência", "Demissão por Abandono de Cargo", "Exoneração a pedido"], 3, 'Média', "Faltar mais de 30 dias seguidos configura Abandono de Cargo e gera Demissão punitiva."),
+                    Q("Estatuto: Se o cargo do psicopedagogo ESTÁVEL for extinto, ele será:", ["Demitido sem direitos", "Aposentado na hora", "Colocado em Disponibilidade com remuneração proporcional", "Transferido à força", "Exonerado com FGTS"], 2, 'Difícil', "A estabilidade garante que ele não perca o vínculo. Fica em Disponibilidade recebendo proporcional até achar nova vaga."),
+                    Q("LOM Assunção: Número exato de vereadores da Câmara Municipal:", ["5", "7", "9", "11", "13"], 2, 'Fácil', "A Lei Orgânica fixa em 9 cadeiras no parlamento local."),
+                    Q("História: A mudança do nome de Estaca Zero sofreu resistência quando tentaram batizar a cidade como 'Presidente Suassuna'. O povo adotou o nome 'Assunção' influenciado por:", ["Um decreto militar do exército", "Uma sugestão do missionário Frei Damião para homenagear a padroeira e tirar o estigma de atraso", "Vontade dos fazendeiros de gado ricos", "Uma tribo indígena Sucuru", "Tropeiros de Pernambuco"], 1, 'Média', "A igreja (Frei Damião) e o povo rejeitaram a homenagem política aos Suassuna e adotaram Nossa Senhora da Assunção."),
+                    Q("Estatuto: Servidor demitido injustamente consegue provar no juiz fraude no processo. Ele volta ao cargo e recebe atrasados via:", ["Recondução", "Nomeação originária", "Reintegração", "Reversão para ativos", "Readaptação"], 2, 'Média', "Reintegração é a volta heroica do servidor injustiçado pagando todo o retroativo."),
+                    Q("LOM Assunção: Qual poder NÃO existe na esfera do Município (é apenas Estadual/Federal)?", ["Poder Executivo", "Poder Legislativo", "Poder Judiciário", "Prefeitura", "Câmara"], 2, 'Fácil', "Municípios não possuem Poder Judiciário próprio (juízes são do Estado/Federação)."),
+                    Q("História: Antes de sua emancipação final em 1994, o território do povoado de Assunção era dividido pela estrada entre dois municípios. Eram eles:", ["Taperoá (Sul) e Juazeirinho (Norte)", "Patos e Soledade", "Campina Grande e Monteiro", "Pocinhos e Gurjão", "Livramento e Teixeira"], 0, 'Fácil', "O eixo da estrada (Estaca Zero) marcava a divisa entre as terras de Taperoá e Juazeirinho."),
+                    Q("LOM Assunção: Quórum necessário na Câmara para emendar (alterar) a Lei Orgânica da cidade:", ["Maioria simples", "Metade mais um", "Decisão do prefeito", "2/3 dos membros da Câmara", "Unanimidade"], 3, 'Difícil', "Alterar a LOM é rito duro e exige consenso de dois terços (2/3) dos vereadores em dois turnos."),
+
+                    // --- INFORMÁTICA (5 Questões) ---
+                    Q("No Word, o atalho universal e salvador CTRL + Z tem o poder de:", ["Destruir o Windows", "Imprimir sem papel", "Desfazer a última ação realizada", "Salvar na nuvem", "Fazer Backup automático"], 2, 'Fácil', "O 'Z' desfaz o último comando/erro."),
+                    Q("Sua clínica adotou a 'Computação em Nuvem' (Cloud). Isso significa que:", ["Os PCs não têm fios de energia", "Os servidores ficam na caixa d'água", "Os laudos não salvam no HD local, mas sim em datacenters globais na internet (Google Drive/OneDrive)", "O Wi-Fi usa sinal de TV", "Os vírus evaporam com o calor"], 2, 'Média', "A nuvem hospeda arquivos na internet, permitindo acesso de qualquer lugar e economizando disco local."),
+                    Q("Você recebeu um e-mail do 'MEC' pedindo para clicar num botão e atualizar senhas. O link leva a um site falso. Qual é esse golpe?", ["DDoS", "Worm cibernético", "Ransomware do mal", "Phishing (Pescaria)", "Cookies"], 3, 'Média', "Phishing é enganar o usuário montando uma 'isca' (site falso) para roubar senhas digitadas voluntariamente."),
+                    Q("Memória do PC focada APENAS no armazenamento permanente de arquivos, que não apaga ao desligar:", ["Memória RAM", "Placa de Vídeo", "Disco Rígido (HD) ou SSD", "Fonte", "Mouse"], 2, 'Fácil', "HD e SSD guardam tudo para sempre (memória de massa/não volátil)."),
+                    Q("Para enviar um edital sigiloso a 50 escolas sem que uma diretora veja o e-mail da outra (preservando privacidade), usa-se o campo:", ["Para", "Cc (Cópia Carbono)", "Cco (Cópia Carbono Oculta)", "Assunto", "Anexo PDF"], 2, 'Fácil', "Cco esconde os endereços dos destinatários uns dos outros."),
+
+                    // --- ESPECÍFICOS - PSICOPEDAGOGIA (25 Questões - Amostra forte final) ---
+                    Q("Segundo a epistemologia de Jean Piaget, a aprendizagem acontece através do processo de equilibração, composto por:", ["Castigo e recompensa sistêmica.", "Assimilação e Acomodação.", "Zona real e Zona proximal.", "Id, Ego e Superego freudiano.", "Esquecimento e resgate traumático."], 1, 'Média', "Na Assimilação o sujeito pega o dado novo; na Acomodação ele muda seu cérebro para entender o dado, gerando o equilíbrio/aprendizagem."),
+                    Q("Transtorno neurobiológico caracterizado por dificuldade severa na aquisição da leitura, fluência e soletração, frequentemente realizando trocas de fonemas surdos e sonoros (v/f, p/b):", ["Deficiência Intelectual", "Discalculia", "Dislexia", "TDAH", "Transtorno Opositor Desafiador (TOD)"], 2, 'Fácil', "Esta é a definição clínica clássica da Dislexia do desenvolvimento."),
+                    Q("Na visão sociointeracionista de Vygotsky, o papel do professor e do psicopedagogo é atuar preferencialmente na:", ["Zona de Desenvolvimento Proximal (ZDP).", "Fase sensório-motora dos bebês de colo.", "Fase de punição operante skinneriana.", "Cura médica do autismo infantil.", "Zona de risco social e criminal isolada."], 0, 'Fácil', "Atuar na ZDP significa fazer a mediação para que a criança alcance aquilo que ainda não consegue fazer sozinha."),
+                    Q("O Estatuto da Criança e do Adolescente (ECA - Lei 8.069/90) garante no seu artigo 53 o direito à educação, visando:", ["O preparo para o militarismo e mercado financeiro exclusivo.", "O pleno desenvolvimento da pessoa, preparo para a cidadania e qualificação para o trabalho.", "O isolamento de crianças com deficiência em manicômios.", "A obrigatoriedade de religião nas escolas públicas laicas.", "O financiamento estudantil privado para o ensino fundamental inferior."], 1, 'Média', "Pleno desenvolvimento, cidadania e trabalho são a tríade do direito à educação no ECA (Art 53)."),
+                    Q("Qual o nome do teste/protocolo inicial, criado por Jorge Visca, amplamente usado na clínica psicopedagógica para observar de forma livre como o sujeito se vincula à aprendizagem (usando uma caixa com materiais)?", ["Eletrocardiograma (ECG).", "EOCA (Entrevista Operativa Centrada na Aprendizagem).", "TISC (Teste de Inteligência Sem Cálculo).", "Rorschach e TAT combinados.", "Bateria de Provas Piagetianas exclusivas de água."], 1, 'Média', "A EOCA é o 'quebra-gelo' diagnóstico, a consigna é 'mostre-me o que você sabe fazer com isso'."),
+                    Q("As Provas Operatórias Piagetianas são utilizadas no diagnóstico psicopedagógico para investigar:", ["O grau de ansiedade e depressão infantil.", "O nível das estruturas cognitivas e lógicas do sujeito (conservação, seriação).", "A fluência exata de leitura cronometrada por segundo.", "Se a criança precisa de óculos de grau urgente.", "A presença de tumores cerebrais orgânicos profundos."], 1, 'Média', "Massa, líquidos e fichas avaliam se a criança atingiu a reversibilidade do pensamento e em que estágio cognitivo está."),
+                    Q("O fracasso escolar, sob o olhar da psicopedagogia contemporânea, é resultado de:", ["Apenas problemas genéticos incuráveis da criança pobre.", "Incompetência exclusiva das metodologias escolares ruins.", "Múltiplos fatores entrelaçados (multicausalidade): dimensão orgânica, cognitiva, familiar, pedagógica e social.", "Mães que trabalham fora o dia todo e abandonam os filhos em creches públicas.", "Falta de punição rigorosa com palmatórias na sala de aula."], 2, 'Fácil', "Não se culpa o sujeito (criança) isoladamente. O sintoma do não-aprender é uma complexa teia multicausal biopsicossocial."),
+                    Q("A intervenção psicopedagógica com uma criança portadora de TDAH no ambiente escolar deve incluir, EXCETO:", ["Fracionamento de tarefas longas em etapas curtas visíveis.", "Posicionamento do aluno nas primeiras carteiras da sala para reduzir distrações laterais periféricas.", "Administração de Ritalina (Metilfenidato) diretamente pelo Psicopedagogo nos dias de provas finais do bimestre.", "Combinados visuais de regras na lousa e pausas curtas para movimento livre.", "Orientação constante aos professores sobre os impactos das funções executivas falhas no aluno."], 2, 'Média', "O Psicopedagogo NÃO receita medicamentos nem obriga o uso. Isso é prerrogativa exclusiva da medicina (neuropediatra/psiquiatria)."),
+                    Q("A Lei de Diretrizes e Bases da Educação Nacional (LDB), em seu Capítulo V, trata da Educação Especial. O Atendimento Educacional Especializado (AEE) deve ser oferecido aos educandos com deficiência:", ["Apenas em escolas filantrópicas como a APAE.", "Preferencialmente na rede regular de ensino.", "Somente no contraturno em clínicas do SUS hospitalar.", "De forma substitutiva, fechando sua vaga na classe comum de ensino regular normal.", "Apenas para os maiores de 18 anos de idade civil."], 1, 'Fácil', "O eixo da Inclusão no Brasil é a matrícula 'preferencialmente' (prioritariamente) na escola regular comum (Art. 58, LDB)."),
+                    Q("Henri Wallon critica a divisão estanque do ser humano. Para ele, o processo de desenvolvimento e aprendizagem exige o entrelaçamento vital de quais dimensões (campos)?", ["Id, Ego, Superego (Campos freudianos analíticos).", "Motor, Cognitivo e Afetivo (Campos funcionais integrados da pessoa).", "Biológico e Nutricional apenas nos primeiros mil dias de vida.", "Cultural e Econômico ditado por Karl Marx.", "Leitura, Escrita e Decodificação gramatical fonológica exata."], 1, 'Média', "Wallon é a grande figura que trouxe a AFETIVIDADE, atrelada à inteligência (cognitivo) e ao movimento (motor) para a sala de aula.")
+                ]
+            }
+        ];
+
+        // --- CONTROLE DE ESTADO ---
+        let currentLessonId = null;
+        let currentQuestions = [];
+        let answers = {};
+        let score = 0;
+        let questionHistory = {};
+
+        // --- FUNÇÕES GLOBAIS DE INTERAÇÃO ---
+        function initApp() {
+            try {
+                renderRaioX();
+                renderCronogramaList();
+                switchTab('cronograma');
+            } catch (e) {
+                console.error("Erro na inicialização do app:", e);
+            }
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'border-blue-600', 'text-white');
+                btn.classList.add('border-transparent', 'text-indigo-300');
+            });
+            
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('active', 'text-white');
+                activeBtn.classList.remove('text-indigo-300');
+            }
+
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.classList.add('hidden');
+            });
+            
+            const view = document.getElementById(`view-${tabName}`);
+            if (view) {
+                view.classList.remove('hidden');
+            }
+
+            if (tabName === 'cronograma') {
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function renderRaioX() {
+            const container = document.getElementById('view-raio-x');
+            if(!container) return;
+
+            let datasHtml = concursoData.datasImportantes.map(d => `
+                <li class="relative pl-6 pb-2 ${d.highlight ? 'bg-indigo-50 -mx-4 px-4 py-3 rounded-xl border border-indigo-100' : ''}">
+                    <div class="absolute left-0 top-1 w-2 h-2 rounded-full ${d.highlight ? 'bg-indigo-600' : 'bg-slate-300'}"></div>
+                    ${!d.highlight ? `<div class="absolute left-[3px] top-4 w-px h-full bg-slate-200"></div>` : ''}
+                    <div class="font-bold ${d.highlight ? 'text-indigo-900 text-lg' : 'text-slate-700'}">${d.evento}</div>
+                    <div class="flex items-center gap-1 font-medium mt-1 ${d.highlight ? 'text-indigo-600' : 'text-slate-500 text-sm'}">
+                        <i class="ph ${d.icon}"></i> ${d.data}
+                    </div>
+                </li>
+            `).join('');
+
+            let editalHtml = concursoData.conteudoProgramatico.map(c => `
+                <div class="bg-slate-50/50 p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-sm w-full">
+                    <h4 class="font-black text-indigo-900 mb-6 text-2xl flex items-center justify-between border-b border-slate-200 pb-4">
+                        ${c.disciplina} <i class="ph-bold ph-check-circle text-emerald-500"></i>
+                    </h4>
+                    <div class="w-full">${c.topicos}</div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6 relative overflow-hidden">
+                            <div class="w-24 h-24 bg-indigo-100 rounded-2xl flex items-center justify-center shrink-0 border border-indigo-200">
+                                <i class="ph-duotone ph-identification-badge text-5xl text-indigo-700"></i>
+                            </div>
+                            <div class="text-center sm:text-left relative z-10">
+                                <div class="inline-flex items-center gap-2 bg-emerald-100 text-emerald-800 font-bold px-3 py-1 rounded-full text-xs mb-2">
+                                    <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div> Concurso Aberto
+                                </div>
+                                <h2 class="text-3xl font-black text-slate-800 mb-2">${concursoData.cargo}</h2>
+                                <p class="text-slate-500 font-medium text-lg">${concursoData.banca} • ${concursoData.vagas}</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center shrink-0 text-emerald-600">
+                                    <i class="ph-bold ph-money text-2xl"></i>
+                                </div>
+                                <div><p class="text-xs font-bold text-slate-400 uppercase">Vencimento Base</p>
+                                     <p class="text-xl font-black text-emerald-700">${concursoData.salario}</p></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center shrink-0 text-blue-600">
+                                    <i class="ph-bold ph-clock text-2xl"></i>
+                                </div>
+                                <div><p class="text-xs font-bold text-slate-400 uppercase">Carga Horária</p>
+                                     <p class="text-xl font-black text-slate-700">${concursoData.cargaHoraria}</p></div>
+                            </div>
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4 sm:col-span-2">
+                                <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 text-amber-600">
+                                    <i class="ph-bold ph-graduation-cap text-2xl"></i>
+                                </div>
+                                <div><p class="text-xs font-bold text-slate-400 uppercase">Requisitos</p>
+                                     <p class="text-lg font-bold text-slate-700">${concursoData.requisito}</p></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-900 text-slate-100 p-8 rounded-3xl shadow-lg relative overflow-hidden">
+                            <h3 class="text-xl font-black mb-4 flex items-center gap-2 border-b border-slate-700 pb-3">
+                                <i class="ph-bold ph-list-checks text-blue-400"></i> Atribuições Práticas
+                            </h3>
+                            <p class="text-slate-300 leading-relaxed text-base font-medium text-justify">${concursoData.atribuicoes}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm h-full">
+                            <h3 class="text-xl font-black text-slate-800 mb-6 flex items-center gap-2 border-b pb-3">
+                                <i class="ph-bold ph-calendar-blank text-indigo-600"></i> Datas Críticas
+                            </h3>
+                            <ul class="space-y-4">${datasHtml}</ul>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-3">
+                        <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm">
+                            <h3 class="text-3xl font-black text-slate-800 mb-8 flex items-center gap-2 border-b border-slate-100 pb-4">
+                                <i class="ph-bold ph-books text-indigo-600"></i> Conteúdo Programático Oficial
+                            </h3>
+                            <div class="grid grid-cols-1 gap-8">${editalHtml}</div>
                         </div>
                     </div>
                 </div>
             `;
-            document.body.insertAdjacentHTML('beforeend', modalHTML);
         }
+
+        function renderCronogramaList() {
+            const container = document.getElementById('cronograma-list');
+            if(!container) return;
+            
+            let html = '';
+            let completedCount = 0;
+
+            aulasDatabase.forEach(aula => {
+                const isCompleted = questionHistory[aula.id] && questionHistory[aula.id].completed;
+                if(isCompleted) completedCount++;
+
+                const isSimulado = aula.id === 8;
+                const bgClass = isSimulado ? 'bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-200' : 'bg-white hover:border-indigo-300 border-slate-200';
+                const iconClass = isSimulado ? 'ph-target text-emerald-600' : 'ph-book-open text-indigo-600';
+                
+                html += `
+                    <div onclick="openAula(${aula.id})" class="cursor-pointer transition-all border rounded-2xl p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${bgClass}">
+                        <div class="flex items-center gap-4 sm:gap-6">
+                            <div class="w-14 h-14 sm:w-16 sm:h-16 ${isSimulado ? 'bg-emerald-100' : 'bg-indigo-50'} rounded-2xl flex items-center justify-center shrink-0">
+                                <i class="ph-bold ${iconClass} text-2xl sm:text-3xl"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 flex items-center gap-2">
+                                    <i class="ph-fill ph-calendar-blank"></i> ${aula.dia}
+                                    ${isCompleted ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[10px]"><i class="ph-bold ph-check"></i> Concluído</span>' : ''}
+                                </div>
+                                <h3 class="text-lg sm:text-xl font-black text-slate-800">${aula.disciplina}</h3>
+                                <p class="text-slate-500 font-medium text-sm sm:text-base mt-0.5">${aula.tema} - <span class="font-bold text-indigo-700">${aula.questoes.length} Questões</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 sm:w-48 justify-end shrink-0">
+                            <div class="hidden sm:block text-right">
+                                <div class="text-xs font-bold text-slate-400 uppercase">Progresso</div>
+                                <div class="text-lg font-black text-slate-700">${aula.progresso}%</div>
+                            </div>
+                            <div class="w-full sm:w-24 h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                                <div class="h-full ${isSimulado ? 'bg-emerald-500' : 'bg-indigo-500'}" style="width: ${aula.progresso}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            
+            let globalProg = Math.round((completedCount / aulasDatabase.length) * 100);
+            document.getElementById('global-progress-text').innerText = `${globalProg}%`;
+        }
+
+        function openAula(id) {
+            const lesson = aulasDatabase.find(a => a.id === id);
+            if(!lesson) return;
+
+            currentLessonId = id;
+            answers = {};
+            score = 0;
+
+            currentQuestions = [...lesson.questoes];
+
+            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden'));
+            document.getElementById('view-aula').classList.remove('hidden');
+            window.scrollTo(0,0);
+
+            const isSimulado = (id === 8);
+
+            document.getElementById('lesson-header-content').innerHTML = `
+                <div class="flex items-center gap-4 fade-in">
+                    <div class="w-16 h-16 ${isSimulado ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' : 'bg-white/20 text-white border-white/20'} rounded-2xl flex items-center justify-center backdrop-blur-sm border">
+                        <i class="ph-bold ${isSimulado ? 'ph-target' : 'ph-book-open'} text-4xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="bg-indigo-800 text-indigo-100 text-xs font-bold px-2 py-1 rounded tracking-widest uppercase"><i class="ph-bold ph-calendar"></i> ${lesson.dia}</span>
+                        </div>
+                        <h2 class="text-3xl md:text-4xl font-black text-white mb-1">${lesson.disciplina}</h2>
+                        <p class="text-lg font-medium text-indigo-200">${lesson.tema} - <strong class="text-white">${currentQuestions.length} Questões</strong></p>
+                    </div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                document.getElementById('lesson-progress-bar').style.width = `${lesson.progresso}%`;
+            }, 100);
+
+            const theoryContainer = document.getElementById('lesson-theory');
+            let theoryHtml = '';
+            if (lesson.teoria && lesson.teoria !== "") {
+                theoryHtml += `<div class="fade-in">${lesson.teoria}</div>`;
+            }
+            if (lesson.perolas && lesson.perolas !== "") {
+                theoryHtml += `
+                    <div class="mt-8 bg-slate-900 rounded-2xl p-8 border-l-8 border-amber-400 shadow-xl fade-in relative">
+                        <h3 class="text-2xl font-black text-amber-400 mb-4 flex items-center gap-3"><i class="ph-bold ph-key"></i> Cofre de Pérolas</h3>
+                        <div class="text-slate-300 font-medium text-lg">${lesson.perolas}</div>
+                    </div>
+                `;
+            }
+
+            if (!theoryHtml) {
+                theoryContainer.classList.add('hidden');
+            } else {
+                theoryContainer.classList.remove('hidden');
+                theoryContainer.innerHTML = theoryHtml;
+            }
+
+            renderQuestionsUI();
+            document.getElementById('lesson-questions-area').classList.remove('hidden');
+        }
+
+        function renderQuestionsUI() {
+            const container = document.getElementById('questions-container');
+            let html = '';
+
+            currentQuestions.forEach((q, qIndex) => {
+                let badgeClass = 'bg-slate-100 text-slate-800';
+                if(q.d === 'Fácil') badgeClass = 'bg-emerald-100 text-emerald-800 border-emerald-200';
+                if(q.d === 'Média') badgeClass = 'bg-amber-100 text-amber-800 border-amber-200';
+                if(q.d === 'Difícil') badgeClass = 'bg-rose-100 text-rose-800 border-rose-200';
+
+                html += `
+                    <div class="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm fade-in" id="q-block-${qIndex}">
+                        <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
+                            <span class="bg-slate-800 text-white font-black text-lg w-10 h-10 flex items-center justify-center rounded-xl shrink-0">${qIndex + 1}</span>
+                            <span class="border ${badgeClass} text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Nível: ${q.d}</span>
+                        </div>
+                        
+                        <h4 class="text-xl font-bold text-slate-800 mb-6 leading-relaxed">${q.t}</h4>
+                        
+                        <div class="space-y-3">
+                            ${q.o.map((alt, altIndex) => {
+                                const letters = ['A', 'B', 'C', 'D', 'E'];
+                                return `
+                                    <div class="alt-container relative bg-slate-50 border border-slate-200 rounded-xl p-4 cursor-pointer hover:bg-indigo-50 hover:border-indigo-200 flex gap-4 items-center" id="alt-${qIndex}-${altIndex}" onclick="selectAnswer(${qIndex}, ${altIndex})">
+                                        <div class="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-300 text-slate-400 hover:bg-slate-100 z-10" onclick="toggleStrike(event, this)">
+                                            <i class="ph-bold ph-scissors tesoura-icon text-lg pointer-events-none"></i>
+                                        </div>
+                                        <div class="flex-grow flex items-center gap-4 pointer-events-none">
+                                            <div class="w-8 h-8 rounded-full border-2 border-slate-300 flex items-center justify-center font-bold text-slate-500 shrink-0 option-letter">${letters[altIndex]}</div>
+                                            <span class="text-slate-700 font-medium text-lg pointer-events-none">${alt}</span>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        
+                        <div id="expl-${qIndex}" class="hidden mt-6 p-5 rounded-2xl border-l-4 text-slate-700 font-medium bg-slate-50"></div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleStrike(e, element) {
+            e.stopPropagation(); 
+            const parent = element.closest('.alt-container');
+            if (parent.classList.contains('locked') || parent.classList.contains('correct-answer')) return;
+            parent.classList.toggle('eliminated');
+        }
+
+        function selectAnswer(qIndex, altIndex) {
+            if(answers[qIndex] !== undefined) return; 
+            
+            const question = currentQuestions[qIndex];
+            const isCorrect = (altIndex === question.a);
+            
+            answers[qIndex] = { selected: altIndex, correct: isCorrect };
+            if(isCorrect) score++;
+
+            question.o.forEach((_, idx) => {
+                const el = document.getElementById(`alt-${qIndex}-${idx}`);
+                el.classList.add('locked');
+                el.classList.remove('hover:bg-indigo-50', 'hover:border-indigo-200', 'cursor-pointer', 'eliminated');
+                
+                const letterDiv = el.querySelector('.option-letter');
+
+                if (idx === question.a) {
+                    el.classList.add('correct-answer');
+                    letterDiv.innerHTML = '<i class="ph-bold ph-check text-xl"></i>';
+                    letterDiv.classList.replace('border-slate-300', 'border-emerald-600');
+                } else if (idx === altIndex && !isCorrect) {
+                    el.classList.add('wrong-answer');
+                    letterDiv.innerHTML = '<i class="ph-bold ph-x text-xl"></i>';
+                    letterDiv.classList.replace('border-slate-300', 'border-rose-600');
+                } else {
+                    el.classList.add('opacity-40');
+                }
+            });
+
+            const explDiv = document.getElementById(`expl-${qIndex}`);
+            explDiv.classList.remove('hidden');
+            if (isCorrect) {
+                explDiv.classList.add('border-emerald-500');
+                explDiv.innerHTML = `<h5 class="text-emerald-700 font-bold mb-1 flex items-center gap-2"><i class="ph-fill ph-check-circle text-xl"></i> Resposta Correta! Raio-X das Alternativas:</h5>${question.e}`;
+            } else {
+                explDiv.classList.add('border-rose-500');
+                explDiv.innerHTML = `<h5 class="text-rose-700 font-bold mb-1 flex items-center gap-2"><i class="ph-fill ph-x-circle text-xl"></i> Resposta Incorreta. Raio-X das Alternativas:</h5>${question.e}`;
+            }
+        }
+
+        function finishLesson() {
+            const total = currentQuestions.length;
+            const answered = Object.keys(answers).length;
+            
+            if (answered < total) {
+                const warContainer = document.getElementById('temp-warning-container');
+                warContainer.innerHTML = `<div class="text-rose-600 font-bold mt-4 animate-pulse"><i class="ph-bold ph-warning"></i> Faltam ${total - answered} questões para terminar. Resolva todas!</div>`;
+                setTimeout(() => warContainer.innerHTML = '', 4000);
+                return;
+            }
+
+            let stats = { 'Fácil': { t: 0, c: 0 }, 'Média': { t: 0, c: 0 }, 'Difícil': { t: 0, c: 0 } };
+
+            currentQuestions.forEach((q, idx) => {
+                if(stats[q.d]) {
+                    stats[q.d].t++;
+                    if(answers[idx].correct) stats[q.d].c++;
+                }
+            });
+
+            let strengths = [];
+            let weaknesses = [];
+
+            ['Fácil', 'Média', 'Difícil'].forEach(level => {
+                if (stats[level].t > 0) {
+                    let perf = stats[level].c / stats[level].t;
+                    if (perf >= 0.7) strengths.push(`Alta retenção em questões <strong>${level}</strong> (${stats[level].c}/${stats[level].t}).`);
+                    else weaknesses.push(`Revisar teoria estratégica de nível <strong>${level}</strong> (${stats[level].c}/${stats[level].t}).`);
+                }
+            });
+
+            if (strengths.length === 0) strengths.push("Continue revisando a teoria e prestando atenção aos comentários.");
+            if (weaknesses.length === 0) weaknesses.push("Excelente domínio estratégico em todo o bloco de questões!");
+
+            document.getElementById('diag-score').innerText = `${score}/${total}`;
+            document.getElementById('diag-percent').innerText = `${Math.round((score/total)*100)}%`;
+            document.getElementById('diag-strengths').innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('diag-weaknesses').innerHTML = weaknesses.map(w => `<li>${w}</li>`).join('');
+            document.getElementById('diag-quote').innerText = `"O treinamento de elite forja resultados na prova."`;
+
+            const modal = document.getElementById('diagnostic-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => {
+                document.getElementById('diagnostic-content').classList.remove('scale-95', 'opacity-0');
+                document.getElementById('diagnostic-content').classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            questionHistory[currentLessonId] = { completed: true, score: score, total: total };
+            renderCronogramaList(); 
+        }
+
+        function closeDiagnostic() {
+            const modal = document.getElementById('diagnostic-modal');
+            document.getElementById('diagnostic-content').classList.remove('scale-100', 'opacity-100');
+            document.getElementById('diagnostic-content').classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                switchTab('cronograma');
+            }, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+
     </script>
 </body>
 </html>
