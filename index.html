@@ -3,24 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MentorIA Estratégico - Professor A (Assunção/PB)</title>
-    
-    <!-- Tailwind CSS -->
+    <title>Main Concursada - Cronograma de Estudos</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        
+        .task-checkbox:checked + label {
+            text-decoration: line-through;
+            color: #64748b;
+        }
+
+        .task-checkbox:checked {
+            accent-color: #10b981;
+        }
+
+        .glass-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
                     colors: {
                         brand: {
                             50: '#eff6ff',
@@ -28,1038 +58,541 @@
                             500: '#3b82f6',
                             600: '#2563eb',
                             900: '#1e3a8a',
-                        },
-                        accent: '#f59e0b'
+                        }
                     }
                 }
             }
         }
     </script>
-
-    <style>
-        body {
-            background-color: #f8fafc; 
-            color: #0f172a; 
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .drop-cap::first-letter {
-            font-size: 3.8rem;
-            font-weight: 900;
-            color: #1e3a8a;
-            float: left;
-            margin-right: 0.5rem;
-            line-height: 0.9;
-            padding-top: 0.3rem;
-        }
-
-        .highlight {
-            font-weight: 700;
-            color: #1e3a8a;
-            background-color: #dbeafe;
-            padding: 2px 6px;
-            border-radius: 4px;
-            border-bottom: 2px solid #3b82f6;
-        }
-
-        .fade-in { animation: fadeIn 0.4s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .alt-container { transition: all 0.2s ease; }
-        .alt-container:hover:not(.locked) { background-color: #f1f5f9; }
-
-        .eliminated {
-            text-decoration: line-through;
-            opacity: 0.4;
-            filter: grayscale(100%);
-        }
-
-        .alt-correct {
-            background-color: #dcfce7 !important;
-            border-color: #22c55e !important;
-            color: #166534;
-        }
-        
-        .alt-wrong {
-            background-color: #fee2e2 !important;
-            border-color: #ef4444 !important;
-            color: #991b1b;
-        }
-
-        .alt-inactive {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        .topic-studied {
-            text-decoration: line-through;
-            opacity: 0.5;
-            background-color: #f1f5f9;
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="antialiased min-h-screen pb-20">
 
-    <header class="bg-brand-900 text-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex items-center gap-2">
-                    <i class="ph-fill ph-student text-3xl text-accent"></i>
-                    <h1 class="text-xl font-black tracking-tight">AprovaIA <span class="font-normal text-brand-100 hidden sm:inline">| Professor A</span></h1>
+    <header class="glass-header sticky top-0 z-50 px-4 py-4 sm:px-6 lg:px-8 mb-8 shadow-sm">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg">
+                    <i class="fa-solid fa-graduation-cap text-xl"></i>
                 </div>
-                <div class="flex gap-1 bg-brand-900 p-1 rounded-lg border border-brand-600">
-                    <button onclick="switchTab('raiox')" id="tab-raiox" class="px-4 py-1.5 rounded-md text-sm font-semibold transition-colors bg-white text-brand-900 shadow-sm">
-                        <i class="ph ph-scan mr-1"></i> Raio-X
-                    </button>
-                    <button onclick="switchTab('cronograma')" id="tab-cronograma" class="px-4 py-1.5 rounded-md text-sm font-semibold transition-colors text-brand-100 hover:text-white hover:bg-brand-600">
-                        <i class="ph ph-calendar-check mr-1"></i> Cronograma (84 Dias)
-                    </button>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Main Concursada</h1>
+                    <p class="text-xs text-slate-500 font-medium">Assunção/PB • Professor A</p>
+                </div>
+            </div>
+            
+            <div class="w-full md:w-1/3 flex flex-col gap-1.5">
+                <div class="flex justify-between items-center text-sm font-semibold">
+                    <span class="text-slate-600">Progresso Geral</span>
+                    <span id="progress-text" class="text-brand-600">0%</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                    <div id="progress-bar" class="bg-brand-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <!-- ABA 1: RAIO-X DO EDITAL -->
-        <div id="view-raiox" class="fade-in">
-            <div class="mb-8">
-                <h2 class="text-3xl font-black text-brand-900 mb-2">Visão Estratégica & Edital</h2>
-                <p class="text-slate-600 text-lg">Mapeamento completo da Banca Ápice Consultoria.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
-                    <div class="p-3 bg-brand-50 rounded-lg text-brand-600"><i class="ph-fill ph-briefcase text-2xl"></i></div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">Atribuições</h3>
-                        <p class="text-sm text-slate-500 mt-1">Ministrar aulas na Educação Básica, zelar pela aprendizagem, participar da proposta pedagógica (PPP).</p>
-                    </div>
+        <section class="mb-12">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-circle-info text-brand-500 text-lg"></i> Informações do Cargo
+            </h2>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Cargo</span>
+                    <span class="font-semibold text-slate-800">Professor A</span>
                 </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
-                    <div class="p-3 bg-green-50 rounded-lg text-green-600"><i class="ph-fill ph-graduation-cap text-2xl"></i></div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">Requisitos</h3>
-                        <p class="text-sm text-slate-500 mt-1">Licenciatura Plena em Pedagogia ou Normal Superior.</p>
-                    </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Vencimento</span>
+                    <span class="font-semibold text-emerald-600">R$ 4.438,64</span>
                 </div>
-                <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start gap-4">
-                    <div class="p-3 bg-accent/10 rounded-lg text-accent"><i class="ph-fill ph-calendar-warning text-2xl"></i></div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">Cronograma de Guerra</h3>
-                        <p class="text-sm text-slate-500 mt-1">De 01/06 a 23/08. Exatas 12 semanas (84 dias) de estudo focado e ininterrupto até a prova.</p>
-                    </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Carga Horária</span>
+                    <span class="font-semibold text-slate-800">30h Semanais</span>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex flex-col">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Vagas (AC)</span>
+                    <span class="font-semibold text-slate-800">02</span>
                 </div>
             </div>
 
-            <div class="bg-brand-900 rounded-xl p-6 mb-8 text-white flex flex-col sm:flex-row items-center justify-between">
-                <div>
-                    <h3 class="text-xl font-bold mb-1">Edital Interativo</h3>
-                    <p class="text-brand-100">Clique nos tópicos para marcá-los como concluídos e controlar seu avanço.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-calendar-check mr-1"></i> Datas Importantes</h3>
+                    <ul class="text-sm space-y-2 text-slate-600">
+                        <li><strong class="text-slate-800">Inscrições:</strong> 01/06 a 30/06/2026</li>
+                        <li><strong class="text-slate-800">Data da Prova:</strong> 30 de Agosto de 2026</li>
+                        <li><strong class="text-slate-800">Taxa de Inscrição:</strong> R$ 60,00</li>
+                    </ul>
                 </div>
-                <div class="mt-4 sm:mt-0 bg-white/20 px-6 py-3 rounded-lg font-black text-3xl backdrop-blur-sm shadow-inner">
-                    <span id="edital-progress">0</span>%
+                <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-list-check mr-1"></i> Requisitos</h3>
+                    <p class="text-sm text-slate-600">Licenciatura em Pedagogia.</p>
+                    <p class="text-sm text-slate-600 mt-2"><strong>Etapas:</strong> 1ª Prova Escrita Objetiva (Eliminatória/Classificatória) e 2ª Prova de Títulos (Classificatória).</p>
                 </div>
             </div>
 
-            <div id="edital-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Preenchido via JS -->
+            <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-100">
+                <h3 class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-briefcase mr-1"></i> Atribuições</h3>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Participar da elaboração e avaliação da proposta pedagógica e do Regimento Interno do estabelecimento de ensino. Elaborar e cumprir o plano de trabalho conforme a proposta pedagógica da Unidade de Ensino e/ou da Secretaria de Educação. Colaborar na organização e execução de atividades educacionais de caráter cívico, cultural e recreativo, zelando pela aprendizagem dos alunos e pela recuperação dos que necessitam. Executar as atribuições previstas no Plano de Carreira, Cargos e Remuneração (PCCR).
+                </p>
             </div>
-        </div>
+        </section>
 
-        <!-- ABA 2: CRONOGRAMA -->
-        <div id="view-cronograma" class="hidden fade-in">
-            <div class="mb-8 flex justify-between items-end">
-                <div>
-                    <h2 class="text-3xl font-black text-brand-900 mb-2">Plano de Estudos (12 Semanas)</h2>
-                    <p class="text-slate-600 text-lg">Aulas profundas de Segunda a Sexta. Sábado é Super Revisão. Domingo é Simulado.</p>
-                </div>
-                <div class="text-right hidden sm:block">
-                    <p class="text-sm font-bold text-slate-500 uppercase">Jornada</p>
-                    <p class="text-2xl font-black text-brand-600"><span id="days-completed">0</span>/84</p>
-                </div>
+        <section id="schedule-container">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-days text-brand-500 text-lg"></i> Cronograma Diário
+                </h2>
+                <button onclick="resetProgress()" class="text-xs font-semibold text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-lg transition-colors">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar
+                </button>
             </div>
             
-            <div id="cronograma-list" class="space-y-10">
-                <!-- Semanas e cards preenchidos via JS -->
+            <p class="text-slate-500 text-sm mb-8">Baseado nos dias entre 15/06 e 28/08. Estude a teoria de segunda a sexta, revise aos sábados e teste seus conhecimentos aos domingos. O edital será completamente batido.</p>
+
+            <div id="weeks-wrapper" class="space-y-8">
+                <!-- Javascript will inject the weeks here -->
             </div>
-        </div>
-
-        <!-- ABA 3: AULA TEÓRICA -->
-        <div id="view-aula" class="hidden fade-in relative">
-            <div id="aula-loading" class="absolute inset-0 bg-[#f8fafc] z-10 flex flex-col items-center justify-center min-h-[60vh] hidden">
-                <i class="ph ph-spinner-gap animate-spin text-5xl text-brand-600 mb-4"></i>
-                <h3 class="text-xl font-bold text-slate-800">Sintetizando Doutrina e Jurisprudência...</h3>
-                <p class="text-slate-500 mt-2">Preparando uma aula de altíssimo nível. Aguarde.</p>
-            </div>
-
-            <div id="aula-content" class="hidden">
-                <button onclick="switchTab('cronograma')" class="mb-6 flex items-center text-brand-600 font-semibold hover:text-brand-800 transition-colors">
-                    <i class="ph ph-arrow-left mr-2"></i> Voltar ao Cronograma
-                </button>
-
-                <!-- Cabeçalho Dinâmico -->
-                <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200 mb-8 border-t-4 border-t-brand-600">
-                    <div class="flex flex-col md:flex-row justify-between md:items-center mb-4 gap-4">
-                        <div>
-                            <span id="aula-date-badge" class="inline-block px-3 py-1 bg-brand-50 border border-brand-200 text-brand-800 text-sm font-bold rounded-lg mb-3 uppercase tracking-wide"></span>
-                            <span id="aula-badge" class="inline-block px-3 py-1 bg-accent/20 text-accent-dark text-sm font-bold rounded-lg mb-3 ml-2"></span>
-                            <h2 id="aula-title" class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-tight"></h2>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Teoria Exaustiva -->
-                <div id="aula-theory-container" class="bg-white p-6 md:p-10 rounded-2xl shadow-sm border border-slate-200 mb-8 text-lg leading-relaxed text-slate-700">
-                    <!-- Inserido via JS -->
-                </div>
-
-                <!-- Sessão de Questões -->
-                <div class="mb-8 flex items-center gap-3 border-b-2 border-slate-200 pb-4">
-                    <i class="ph-fill ph-exam text-4xl text-brand-600"></i>
-                    <div>
-                        <h3 class="text-3xl font-black text-slate-900">Bateria de Questões</h3>
-                        <p class="text-slate-500 font-medium">Resolva para consolidar. O gabarito comentado aparecerá após a escolha.</p>
-                    </div>
-                </div>
-                
-                <div id="questions-container" class="space-y-8">
-                    <!-- Questões inseridas via JS -->
-                </div>
-
-                <div class="mt-12 mb-20 flex justify-center">
-                    <button id="btn-finalizar" onclick="finalizarAula()" class="bg-brand-600 hover:bg-brand-700 text-white px-10 py-5 rounded-xl font-black text-2xl shadow-xl shadow-brand-600/30 transition-transform transform hover:-translate-y-1">
-                        <i class="ph-fill ph-flag-checkered mr-2"></i> Finalizar Aula e Ver Diagnóstico
-                    </button>
-                </div>
-            </div>
-        </div>
+        </section>
 
     </main>
 
-    <!-- Modal de Diagnóstico -->
-    <div id="modal-diagnostico" class="fixed inset-0 bg-slate-900/90 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-white rounded-3xl w-full max-w-3xl overflow-hidden shadow-2xl transform transition-all">
-            <div class="bg-brand-900 p-8 text-center text-white relative">
-                <i class="ph-fill ph-chart-polar text-6xl text-accent mb-4"></i>
-                <h2 class="text-4xl font-black mb-2 tracking-tight">Diagnóstico de Elite</h2>
-                <p class="text-brand-100 text-lg font-medium">Raio-X do seu desempenho na bateria de questões.</p>
-            </div>
-            <div class="p-8 md:p-10">
-                <div class="flex justify-center mb-10">
-                    <div class="text-center p-6 bg-slate-50 rounded-2xl border border-slate-200 w-full max-w-sm shadow-inner">
-                        <p class="text-sm font-bold text-slate-500 uppercase tracking-widest mb-2">Sua Pontuação</p>
-                        <div class="text-7xl font-black text-slate-900"><span id="diag-acertos" class="text-brand-600"></span><span class="text-4xl text-slate-400">/<span id="diag-total"></span></span></div>
-                        <p id="diag-percent" class="text-lg font-bold mt-2 text-slate-600"></p>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
-                    <div class="bg-green-50 p-6 rounded-2xl border border-green-200">
-                        <h4 class="font-black text-green-800 flex items-center mb-3 text-lg"><i class="ph-fill ph-trend-up mr-2 text-2xl"></i> Pontos Fortes</h4>
-                        <p id="diag-fortes" class="text-base text-green-700 font-medium leading-relaxed"></p>
-                    </div>
-                    <div class="bg-red-50 p-6 rounded-2xl border border-red-200">
-                        <h4 class="font-black text-red-800 flex items-center mb-3 text-lg"><i class="ph-fill ph-warning-circle mr-2 text-2xl"></i> Atenção Urgente</h4>
-                        <p id="diag-fracos" class="text-base text-red-700 font-medium leading-relaxed"></p>
-                    </div>
-                </div>
-
-                <div class="text-center p-6 border-l-4 border-accent bg-amber-50 rounded-r-xl">
-                    <p id="diag-frase" class="text-xl font-bold text-slate-800 italic"></p>
-                </div>
-
-                <div class="mt-10 text-center">
-                    <button onclick="fecharModal()" class="bg-brand-900 hover:bg-brand-800 text-white px-10 py-4 rounded-xl font-bold text-lg transition-colors w-full shadow-lg">
-                        Voltar ao Cronograma Geral
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        let state = {
-            studiedTopics: JSON.parse(localStorage.getItem('aprovaIA_topics')) || [],
-            completedClasses: JSON.parse(localStorage.getItem('aprovaIA_classes')) || [],
-            currentAulaId: null,
-            answers: {} 
-        };
-
-        // Substituição do alert() por um Toast moderno
-        function showWarning(msg) {
-            let w = document.getElementById('custom-warning');
-            if(!w) {
-                w = document.createElement('div');
-                w.id = 'custom-warning';
-                w.className = 'fixed top-6 right-6 bg-red-600 text-white px-6 py-4 rounded-xl shadow-2xl z-[200] font-bold transform transition-all duration-300';
-                document.body.appendChild(w);
-            }
-            w.innerText = msg;
-            w.style.opacity = '1';
-            w.style.transform = 'translateY(0)';
-            w.style.display = 'block';
-            setTimeout(() => { 
-                w.style.opacity = '0';
-                w.style.transform = 'translateY(-20px)';
-                setTimeout(() => w.style.display = 'none', 300);
-            }, 4000);
-        }
-
-        const concursoData = {
-            conteudoProgramatico: [
-                {
-                    id: 1,
-                    title: "1. LÍNGUA PORTUGUESA",
-                    subtopics: [
-                        "1.1 Compreensão e interpretação de textos.",
-                        "1.2 Tipologia textual e gêneros textuais.",
-                        "1.3 Ortografia oficial.",
-                        "1.4 Acentuação gráfica.",
-                        "1.5 Emprego das classes de palavras.",
-                        "1.6 Sintaxe da oração e do período.",
-                        "1.7 Pontuação.",
-                        "1.8 Concordância nominal e verbal.",
-                        "1.9 Regência nominal e verbal."
-                    ]
-                },
-                {
-                    id: 2,
-                    title: "2. INFORMÁTICA",
-                    subtopics: [
-                        "2.1 Hardware: Componentes básicos, periféricos, memórias.",
-                        "2.2 Sistemas Operacionais: Windows e Linux.",
-                        "2.3 Editores de Texto e Planilhas.",
-                        "2.4 Internet, Redes e Computação na Nuvem.",
-                        "2.5 Segurança da Informação (Vírus, Backup, Criptografia)."
-                    ]
-                },
-                {
-                    id: 3,
-                    title: "3. CONHECIMENTOS PEDAGÓGICOS",
-                    subtopics: [
-                        "3.1 Lei de Diretrizes e Bases da Educação Nacional (LDB).",
-                        "3.2 Estatuto da Criança e do Adolescente (ECA).",
-                        "3.3 Base Nacional Comum Curricular (BNCC).",
-                        "3.4 Planejamento, Currículo e Avaliação.",
-                        "3.5 Educação Inclusiva e Teorias do Desenvolvimento."
-                    ]
-                },
-                {
-                    id: 4,
-                    title: "4. LEGISLAÇÃO E HISTÓRIA DO MUNICÍPIO",
-                    subtopics: [
-                        "4.1 Lei Orgânica do Município de Assunção.",
-                        "4.2 Estatuto dos Servidores Públicos de Assunção.",
-                        "4.3 História e Cultura de Assunção (Obras de Lázaro Alves e José Luciano)."
-                    ]
-                }
-            ]
-        };
-
-        function generateProceduralQuestions(count, subjectStr, levelRule) {
-            let q = [];
-            for(let i=1; i<=count; i++) {
-                let level = 'Fácil';
-                if(i > count/3) level = 'Média';
-                if(i > (count/3)*2) level = 'Difícil';
-                
-                let focus = subjectStr;
-                if(subjectStr.includes("Revisão") || subjectStr.includes("Simulado") || subjectStr.includes("Múltiplas")) {
-                    if(i % 4 === 0) focus = "Língua Portuguesa (Sintaxe e Interpretação)";
-                    else if(i % 4 === 1) focus = "Informática (Hardware e Windows)";
-                    else if(i % 4 === 2) focus = "Conhecimentos Pedagógicos (LDB e ECA)";
-                    else focus = "Legislação e História de Assunção/PB";
-                }
-
-                q.push({
-                    text: `(Inédita - Foco Ápice Consultoria) No que tange à doutrina, jurisprudência e legislação aplicáveis a <strong>${focus}</strong>, analise o caso hipotético e/ou afirmativa a seguir. Assinale a alternativa que apresenta o comando estritamente CORRETO:`,
-                    options: [
-                        `Apresenta uma visão distorcida do conceito, limitando sua aplicação prática no ambiente escolar ou municipal ao usar termos como "exclusivamente".`,
-                        `Contraria o dispositivo legal expresso, invertendo responsabilidades (ex: atribuindo à União um dever que é do Município de Assunção).`,
-                        `Reflete com exatidão a norma vigente e a bibliografia exigida no edital, configurando a regra geral e seus princípios norteadores.`,
-                        `Erra ao estipular prazos, métricas ou capacidades que foram revogadas por atualizações legislativas recentes.`,
-                        `Traz um conceito aplicável apenas à iniciativa privada, não possuindo amparo no Regime Jurídico Único (Lei 147/2005) ou na LDB.`
-                    ],
-                    correct: 2, 
-                    explanations: [
-                        `<strong>INCORRETA.</strong> Bancas como a Ápice adoram usar palavras restritivas ("apenas", "somente", "exclusivamente", "sempre") para invalidar a assertiva. No Direito Administrativo e Pedagógico, a regra quase sempre comporta exceções.`,
-                        `<strong>INCORRETA.</strong> Pegadinha clássica de <em>inversão de competência</em>. O candidato deve ter cuidado para não atribuir ao Município um dever que é do Estado/União, ou à Família um dever do Estado. O examinador troca o sujeito da ação.`,
-                        `<strong>CORRETA!</strong> A afirmativa é a cópia fiel (literalidade) da legislação/doutrina de referência para ${focus}. O comando reflete o "espírito da lei", sendo o alicerce para gabaritar a prova.`,
-                        `<strong>INCORRETA.</strong> Dados numéricos (prazos de posse, idades de escolarização obrigatória, dias letivos) são frequentemente alterados nas alternativas para confundir o candidato desatento.`,
-                        `<strong>INCORRETA.</strong> Os preceitos cobrados para o cargo de Professor A devem ser aplicados sob a ótica da Administração Pública e do interesse coletivo da Educação Básica, não sob a lógica do mercado privado ou da CLT.`
-                    ],
-                    level: level
-                });
-            }
-            return q;
-        }
-
-        const week1Database = [
+        // Data Structure for the Schedule based rigorously on the Edital
+        const scheduleData = [
             {
-                id: 1,
-                dateObj: new Date(2026, 5, 1), 
-                dayLabel: "Dia 1",
-                title: "LDB e ECA: O Alicerce Jurídico do Professor",
-                disciplina: "Conhecimentos Pedagógicos",
-                peso: "Peso 2 (Alta Relevância)",
-                theory: `
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-black text-brand-900 mb-4 border-b-2 border-brand-100 pb-2 uppercase tracking-wide">Canto do Saber: Imersão Profunda</h3>
-                        <p class="drop-cap">A LDB (Lei 9.394/96) e o ECA (Lei 8.069/90) formam a espinha dorsal de qualquer concurso educacional. Para a Banca Ápice, o estudo superficial é garantia de reprovação. A LDB, no seu Art. 2º, consagra que a educação é dever da <strong>família e do Estado</strong>. Atenção máxima: bancas costumam colocar "família ou Estado" (conjunção alternativa), o que torna a questão sumariamente falsa.</p>
-                        
-                        <p class="mt-6 text-justify text-slate-700">Um ponto de altíssima incidência nas provas para Professor A diz respeito à organização da Educação Básica. Segundo o Art. 4º da LDB (alterado pela EC 59/2009), a educação básica obrigatória e gratuita vai dos <span class="highlight">4 (quatro) aos 17 (dezessete) anos</span> de idade, organizada em: <strong>Pré-escola, Ensino Fundamental e Ensino Médio</strong>. As creches (0 a 3 anos) são um direito da criança e um dever do Estado em oferecer, mas a matrícula <em>não é obrigatória</em> por parte da família.</p>
-                        
-                        <h4 class="text-xl font-black text-slate-800 mt-10 mb-4">O ECA e o Papel do Educador (Art. 53 ao 56)</h4>
-                        <p class="text-justify text-slate-700">O Estatuto da Criança e do Adolescente não é apenas uma lei punitiva, mas uma carta de direitos. O Art. 53 assegura o direito à educação visando três pilares indissociáveis: <strong>pleno desenvolvimento da pessoa, preparo para o exercício da cidadania e qualificação para o trabalho</strong>. Na prática diária do Professor de Assunção, o Art. 56 é o mais cobrado:</p>
-                        
-                        <div class="mt-6 p-6 bg-brand-50 border-l-4 border-brand-600 rounded-r-xl shadow-sm text-brand-900">
-                            <p class="font-semibold italic">"Art. 56. Os dirigentes de estabelecimentos de ensino fundamental comunicarão ao <strong>Conselho Tutelar</strong> os casos de:<br>
-                            I - maus-tratos envolvendo seus alunos;<br>
-                            II - reiteração de faltas injustificadas e de evasão escolar, <strong>esgotados os recursos escolares</strong>;<br>
-                            III - elevados níveis de repetência."</p>
-                        </div>
-                        <p class="mt-4 text-sm text-brand-700 font-bold">🎯 Foco da Banca: A Ápice adora dizer que a escola deve comunicar a "Polícia Militar" ou o "Ministério Público" diretamente. Errado! A comunicação primária é sempre ao Conselho Tutelar.</p>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(15, "LDB (Princípios e Fins) e ECA (Direito à Educação)")
+                week: "Semana 1",
+                dates: "15/06 a 21/06",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_1", tag: "Português", title: "1. Leitura e interpretação textual." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_1", tag: "Informática", title: "1. Noções de sistemas operacionais (Windows 10/11 e Linux); 1.1. Conceitos de pastas. arquivos e diretórios; 1.2. Atalhos. área de transferência e menus; 1.3. Programas. aplicativos. compactação de arquivos; 1.4. Extensões e arquivos." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_1", tag: "Pedagógicos", title: "1. Educação. sociedade e estado." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_1", tag: "Específicos", title: "1. Educação inclusiva e legislação relacionada;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_2", tag: "Português", title: "2. Gêneros textuais/discursivos: estrutura composicional. conteúdo temático e estilo de linguagem." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_1", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_1", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 2,
-                dateObj: new Date(2026, 5, 2),
-                dayLabel: "Dia 2",
-                title: "Hardware, Windows e as Armadilhas da Informática",
-                disciplina: "Informática Básica",
-                peso: "Peso 1 (Diferencial para Aprovação)",
-                theory: `
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-black text-brand-900 mb-4 border-b-2 border-brand-100 pb-2 uppercase tracking-wide">Canto do Saber: Desmistificando a Máquina</h3>
-                        <p class="drop-cap">A prova de Informática para Professor A não exige conhecimento de programação, mas sim o domínio do ambiente de trabalho diário (lançamento de notas, elaboração de provas, pesquisas). O edital divide a disciplina em dois blocos letais: <strong>Hardware (parte física) e Software (parte lógica)</strong>.</p>
-                        
-                        <h4 class="text-xl font-black text-slate-800 mt-8 mb-4">A Hierarquia de Memórias (O Triângulo de Ouro)</h4>
-                        <p class="text-justify text-slate-700">Para que a CPU (Processador - o cérebro) não fique ociosa esperando dados lentos do HD, o computador utiliza uma hierarquia de memórias, baseada em velocidade e custo. Entenda a diferença crucial que despenca em prova:</p>
-                        <ul class="space-y-4 mt-6 ml-2 list-none text-slate-700">
-                            <li class="flex items-start bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                                <i class="ph-fill ph-memory text-3xl text-brand-600 mr-4 mt-1"></i>
-                                <div>
-                                    <strong class="text-slate-900 text-lg">Memória RAM (Volátil):</strong> É a memória principal, a sua "mesa de trabalho". Tudo que você abre (Word, Chrome) vai para a RAM. Se faltar energia, a mesa é "limpa" (os dados são perdidos). Ela é essencial para o Multitarefa.
-                                </div>
-                            </li>
-                            <li class="flex items-start bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                                <i class="ph-fill ph-cpu text-3xl text-accent mr-4 mt-1"></i>
-                                <div>
-                                    <strong class="text-slate-900 text-lg">Memória Cache (Volátil e Ultrarrápida):</strong> Fica soldada dentro (ou muito perto) do Processador. Ela guarda as instruções que a CPU usa com mais frequência. É a memória mais rápida do computador comercial, porém com pequena capacidade de armazenamento.
-                                </div>
-                            </li>
-                            <li class="flex items-start bg-white p-4 rounded-xl shadow-sm border border-slate-200">
-                                <i class="ph-fill ph-hard-drives text-3xl text-slate-600 mr-4 mt-1"></i>
-                                <div>
-                                    <strong class="text-slate-900 text-lg">ROM e Armazenamento (Não-Voláteis):</strong> A ROM vem de fábrica com instruções básicas (BIOS) e não perde dados sem energia. O HD e o SSD são memórias de massa. O SSD usa memória <em>Flash</em> e não possui partes móveis, sendo infinitamente mais rápido que um HD antigo.
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(15, "Hardware, Hierarquia de Memórias e Windows")
+                week: "Semana 2",
+                dates: "22/06 a 28/06",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_3", tag: "Português", title: "3. Intergenericidade/hibridismo de gêneros textuais/discursivos." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_2", tag: "Informática", title: "2. Funcionalidades sobre hardware e software." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_2", tag: "Pedagógicos", title: "2. Formação docente multidimensional." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_2", tag: "Específicos", title: "2. Teorias do desenvolvimento infantil;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_4", tag: "Português", title: "4. Tipologias/sequências textuais: dissertativa. argumentativa. descritiva. narrativa. injuntiva e dialogal." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_2", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_2", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 3,
-                dateObj: new Date(2026, 5, 3),
-                dayLabel: "Dia 3",
-                title: "Morfossintaxe e a Inteligência Textual",
-                disciplina: "Língua Portuguesa",
-                peso: "Peso 2 (Essencial)",
-                theory: `
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-black text-brand-900 mb-4 border-b-2 border-brand-100 pb-2 uppercase tracking-wide">Canto do Saber: Dissecando a Gramática</h3>
-                        <p class="drop-cap">A Ápice Consultoria não faz provas de Português puramente conteudistas; ela exige a aplicação da gramática dentro do texto (Morfossintaxe Aplicada). O primeiro passo é blindar seu conhecimento sobre as Conjunções, as palavras responsáveis por amarrar as ideias (Coesão Sequencial).</p>
-                        
-                        <p class="mt-6 text-justify text-slate-700">Preste atenção nas <span class="highlight">Conjunções Adversativas</span> (mas, porém, contudo, todavia, entretanto, no entanto). Elas quebram a expectativa gerada na oração anterior. Exemplo: "O aluno estudou muito, <em>porém</em> foi reprovado." A Ápice frequentemente pede para substituir "porém" por "embora". Isso é <strong>ERRADO</strong>! "Embora" é Conjunção Concessiva e exigiria mudança no verbo ("Embora <em>tenha estudado</em> muito, foi reprovado").</p>
-
-                        <h4 class="text-xl font-black text-slate-800 mt-10 mb-4">Compreensão vs. Interpretação</h4>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                            <div class="bg-indigo-50 p-6 rounded-xl border-l-4 border-indigo-500">
-                                <h5 class="font-bold text-indigo-900 mb-2">Compreensão (Está no Texto)</h5>
-                                <p class="text-indigo-800 text-sm">É a análise literal. Os comandos da questão serão: <em>Segundo o texto, o autor afirma que, de acordo com o narrador...</em> A resposta está escrita com todas as letras no parágrafo.</p>
-                            </div>
-                            <div class="bg-teal-50 p-6 rounded-xl border-l-4 border-teal-500">
-                                <h5 class="font-bold text-teal-900 mb-2">Interpretação (Está além do Texto)</h5>
-                                <p class="text-teal-800 text-sm">É a dedução, a inferência lógica permitida pelas pistas do autor. Comandos: <em>Infere-se, deduz-se, conclui-se, é possível subentender...</em> Exige leitura crítica.</p>
-                            </div>
-                        </div>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(15, "Morfologia (Conjunções) e Interpretação Textual")
+                week: "Semana 3",
+                dates: "29/06 a 05/07",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_5", tag: "Português", title: "5. Elementos/fatores de textualidade: coesão. coerência. intencionalidade. aceitabilidade. informatividade. situacionalidade e intertextualidade." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_3", tag: "Informática", title: "3. Edição de textos. planilhas e apresentações (ambientes Microsoft Office e Google Drive)." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_3", tag: "Pedagógicos", title: "3. Tendências pedagógicas modernas e contemporâneas alinhadas ao pensamento \"pós-moderno\"." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_3", tag: "Específicos", title: "3. Teorias da aprendizagem;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_6", tag: "Português", title: "6. Ortografia." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_3", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_3", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 4,
-                dateObj: new Date(2026, 5, 4),
-                dayLabel: "Dia 4",
-                title: "A Constituição Local: LOM e Estatuto dos Servidores",
-                disciplina: "Legislação do Município",
-                peso: "Peso 2 (Diferencial Absoluto)",
-                theory: `
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-black text-brand-900 mb-4 border-b-2 border-brand-100 pb-2 uppercase tracking-wide">Canto do Saber: A Espinha Dorsal de Assunção</h3>
-                        <p class="drop-cap">Aprovar-se no concurso sem dominar a <strong>Lei Orgânica do Município (LOM)</strong> e a <strong>Lei 147/2005 (Estatuto)</strong> é uma utopia. A LOM atua como a Constituição da cidade. Promulgada em 19 de julho de 1997, ela estabelece em seu Art. 2º que são Poderes do Município, independentes e harmônicos entre si, o <strong>Legislativo (Câmara) e o Executivo (Prefeitura)</strong>. <em>Pegadinha letal: Município NÃO POSSUI Poder Judiciário.</em></p>
-                        
-                        <p class="mt-6 text-justify text-slate-700">A Câmara de Assunção é composta por <span class="highlight">09 (nove) Vereadores</span> (Art. 5º). A Mesa Diretora tem mandato de 2 anos, sendo vedada a recondução para o mesmo cargo na eleição imediatamente subsequente. O Prefeito e o Vice tomam posse no dia 1º de janeiro. Se não tomarem posse em 10 dias (salvo força maior), o cargo é declarado vago (Art. 43).</p>
-
-                        <h4 class="text-xl font-black text-slate-800 mt-10 mb-4">Estatuto dos Servidores (Lei nº 147/2005) - Formas de Provimento</h4>
-                        <p class="text-slate-700 mb-4">O Art. 10 define as formas pelas quais você "entra" em um cargo público. Decore este mapa mental para a prova:</p>
-                        <div class="bg-amber-50 p-6 rounded-xl border border-amber-200 shadow-inner">
-                            <ul class="space-y-3 list-disc list-inside text-amber-900 font-medium">
-                                <li><strong>Nomeação:</strong> A única forma de provimento ORIGINÁRIO (pode ser efetivo via concurso, ou em comissão de livre exoneração).</li>
-                                <li><strong>Reintegração:</strong> É a volta do servidor demitido de forma ilegal (invalidada por sentença judicial). Ele volta com ressarcimento total.</li>
-                                <li><strong>Reversão:</strong> É o retorno do "Velhinho". O aposentado por invalidez volta quando a junta médica declara os motivos insubsistentes. Cuidado: Não pode reverter se já tiver 60 anos (Art. 26).</li>
-                                <li><strong>Readaptação:</strong> O servidor sofreu limitação física/mental e é colocado em cargo compatível com a limitação.</li>
-                            </ul>
-                        </div>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(15, "Lei Orgânica de Assunção e Estatuto (Lei 147/2005)")
+                week: "Semana 4",
+                dates: "06/07 a 12/07",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_7", tag: "Português", title: "7. Acentuação." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_4", tag: "Informática", title: "4. Correio eletrônico. envio de mensagens. webmail e clientes de e-mail." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_4", tag: "Pedagógicos", title: "4. Educação inclusiva." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_4", tag: "Específicos", title: "4. BNCC;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_8", tag: "Português", title: "8. Letra. fonema. sílaba. divisão silábica. dígrafo. encontro consonantal e encontro vocálico." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_4", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_4", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 5,
-                dateObj: new Date(2026, 5, 5),
-                dayLabel: "Dia 5",
-                title: "As Raízes de Assunção: Da Estaca Zero à Emancipação",
-                disciplina: "História e Cultura de Assunção",
-                peso: "Peso 2 (Gabarito Obrigatório)",
-                theory: `
-                    <div class="mb-8">
-                        <h3 class="text-2xl font-black text-brand-900 mb-4 border-b-2 border-brand-100 pb-2 uppercase tracking-wide">Canto do Saber: Memória Viva</h3>
-                        <p class="drop-cap">A historiografia local de Assunção é riquíssima e cobrada na literalidade das obras base do edital: <em>"Estaca Zero de Ontem, Assunção de Hoje"</em> (José Luciano e Lázaro Alves) e <em>"Teus Filhos Contam Tua História"</em>. Ao contrário da maioria das cidades do Cariri, que nasceram de fazendas de gado, Assunção nasceu do <strong>Comércio e das Estradas</strong>.</p>
-                        
-                        <p class="mt-6 text-justify text-slate-700">Na década de 1930, para combater a seca (Plano de Obras Contra a Seca - IFOCS), rasgou-se uma estrada de rodagem. No ponto exato do ramal que seguia para Taperoá, fixou-se um marco topográfico: a <strong>Estaca Zero</strong>. Em 1939, <span class="highlight">José Pedro Diniz</span> construiu ali um barracão de lona (uma latada) para vender frutas e gêneros. Em 1941, <span class="highlight">Pio Salvador de Maria</span> inaugurou a primeira casa de tijolos e um hotel. Estava fundado o núcleo urbano.</p>
-
-                        <h4 class="text-xl font-black text-slate-800 mt-10 mb-4">A Linha Férrea, o Nome e a Emancipação</h4>
-                        <ul class="space-y-4 mt-4 list-none text-slate-700">
-                            <li class="pl-4 border-l-4 border-slate-400">
-                                <strong>A Chegada do Trem (1958):</strong> A "Great Western" e a Rede Viação Cearense trouxeram a linha férrea, inaugurando a Estação de Estaca Zero, consolidando o progresso da vila.
-                            </li>
-                            <li class="pl-4 border-l-4 border-accent">
-                                <strong>A Mudança de Nome (1959):</strong> O famoso Frei Damião de Bozano sugeriu que "Estaca Zero" significava estagnação. Propôs homenagear a padroeira, a Mãe de Deus. Assim, a banda sul do distrito passou a se chamar <strong>Assunção</strong>. Anos depois, a população rechaçou a tentativa do Dep. Marcus Odilon e Ariano Suassuna de mudar o nome para "Presidente Suassuna", gritando "Fora Forasteiro!".
-                            </li>
-                            <li class="pl-4 border-l-4 border-green-500">
-                                <strong>A Saga da Emancipação:</strong> A 1ª emancipação ocorreu em 1964 (Dep. Egídio Madruga), mas foi cassada pelo STF em 1965, voltando a ser distrito. A emancipação final e definitiva se deu após o histórico <strong>Plebiscito do "SIM" em 15 de Novembro de 1993</strong>, sendo a Lei nº 5.895 assinada pelo Governador Cícero Lucena em 29/04/1994.
-                            </li>
-                        </ul>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(15, "História de Assunção (Obras de Lázaro/José Luciano e Adenildo)")
+                week: "Semana 5",
+                dates: "13/07 a 19/07",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_9", tag: "Português", title: "9. Estrutura e formação de palavras." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_5", tag: "Informática", title: "5. Redes de computadores: 5.1. Conceitos básicos. ferramentas e procedimentos de internet e intranet; 5.2. Navegadores (Microsoft Edge. Mozilla Firefox e Google Chrome); 5.3. Sites de busca e pesquisa na internet; 5.4. Computação na nuvem (cloud computing)." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_5", tag: "Pedagógicos", title: "5. Interlocução entre Didática e Currículo." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_5", tag: "Específicos", title: "5. Planejamento e avaliação da aprendizagem;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_10", tag: "Português", title: "10. Morfossintaxe das classes de palavras." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_5", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_5", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 6,
-                dateObj: new Date(2026, 5, 6),
-                dayLabel: "Dia 6",
-                title: "SUPER REVISÃO DA SEMANA 1 (Active Recall)",
-                disciplina: "Revisão Consolidada",
-                peso: "Retenção Absoluta",
-                theory: `
-                    <div class="mb-8">
-                        <div class="bg-gradient-to-r from-brand-900 to-brand-700 text-white p-8 md:p-12 rounded-3xl shadow-2xl mb-10 relative overflow-hidden">
-                            <div class="absolute -right-10 -top-10 opacity-10">
-                                <i class="ph-fill ph-brain text-[15rem]"></i>
-                            </div>
-                            <div class="relative z-10">
-                                <h3 class="text-4xl md:text-5xl font-black mb-4 tracking-tight">O Suor Poupa o Sangue!</h3>
-                                <p class="text-xl md:text-2xl text-brand-100 font-medium max-w-3xl">Bem-vindo à Super Revisão da Semana 1. A ciência comprova: revisar massivamente (Active Recall) é o único caminho para a memória de longo prazo.</p>
-                            </div>
-                        </div>
-
-                        <h3 class="text-3xl font-black text-slate-800 mb-6 border-b-4 border-accent pb-2 inline-block">Síntese de Elite das 5 Disciplinas</h3>
-                        
-                        <div class="space-y-8 text-lg text-slate-700 leading-relaxed">
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xl font-bold text-brand-700 mb-3 flex items-center"><i class="ph-fill ph-graduation-cap mr-2"></i>1. Conhecimentos Pedagógicos (LDB e ECA)</h4>
-                                <p>Relembre o mantra: Educação Básica Obrigatória é dos <strong>4 aos 17 anos</strong>. Creches (0 a 3 anos) não são de matrícula obrigatória. O Ensino Fundamental tem 9 anos. A Carga Horária mínima é de <strong>800 horas / 200 dias de EFETIVO trabalho escolar</strong> (excluídos os exames finais!). Pelo ECA (Art. 56), esgotados os recursos escolares para faltas e evasão, a escola aciona o <strong>Conselho Tutelar</strong> (e não a polícia ou o juiz).</p>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xl font-bold text-blue-700 mb-3 flex items-center"><i class="ph-fill ph-desktop mr-2"></i>2. Informática Básica</h4>
-                                <p>Hardware = Chute. Software = Xingue. Na hierarquia das memórias, a <strong>Cache</strong> é a mais veloz e fica cravada na CPU. A <strong>RAM</strong> é a "mesa de trabalho" volátil (perde tudo se faltar luz). A <strong>ROM</strong> vem de fábrica (BIOS, não perde dados). Periféricos I/O (Mistões): Tela Touchscreen, Impressora Multifuncional e Pendrive.</p>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xl font-bold text-emerald-700 mb-3 flex items-center"><i class="ph-fill ph-book-open mr-2"></i>3. Língua Portuguesa</h4>
-                                <p>Cuidado extremo com as conjunções que alteram a Coerência do texto! <strong>Adversativas</strong> dão ideia de quebra, oposição direta (mas, porém, contudo). <strong>Concessivas</strong> dão ideia de obstáculo superado (embora, conquanto). Na leitura, <em>Compreensão</em> é o que o texto DIZ LITERALMENTE ("Segundo o autor..."). <em>Interpretação</em> é o que se DEDUZ ("Infere-se que...").</p>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xl font-bold text-amber-700 mb-3 flex items-center"><i class="ph-fill ph-scales mr-2"></i>4. Legislação (LOM e Estatuto)</h4>
-                                <p>O Município de Assunção NÃO tem Poder Judiciário, apenas Executivo e Legislativo (9 vereadores). No Provimento do Servidor, a <strong>Reintegração</strong> salva quem foi demitido injustamente (volta com grana). A <strong>Reversão</strong> salva o velhinho aposentado por invalidez que ficou curado (limite de 60 anos). O Estágio Probatório dura exatos 36 meses e garante a Estabilidade em 3 anos.</p>
-                            </div>
-
-                            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-                                <h4 class="text-xl font-bold text-purple-700 mb-3 flex items-center"><i class="ph-fill ph-map-pin mr-2"></i>5. História de Assunção</h4>
-                                <p>Berço comercial! Ao invés do gado (como o resto do Cariri), nascemos de uma placa de estrada: a <strong>Estaca Zero</strong>. José Pedro Diniz (Barracão, 1939) e Pio Salvador (Casa de Tijolo, 1941) deram o pontapé. O Trem apitou em 1958. Frei Damião batizou de "Assunção" em 1959. E no lendário dia <strong>15 de Novembro de 1993</strong>, o povo votou "SIM" no Plebiscito, garantindo a carta de alforria sancionada em 1994.</p>
-                            </div>
-                        </div>
-                        
-                        <p class="mt-10 text-xl font-black text-center text-slate-800">A teoria foi revisada. O campo de batalha o aguarda. Resolva as 35 questões abaixo e prove o seu valor.</p>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(35, "Revisão Geral Consolidada da Semana 1")
+                week: "Semana 6",
+                dates: "20/07 a 26/07",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_11", tag: "Português", title: "11. Frase. oração e período." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_6", tag: "Informática", title: "6. Conceitos de organização e de gerenciamento de informações. arquivos. pastas e programas." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_6", tag: "Pedagógicos", title: "6. Planejamento e gestão educacional." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_6", tag: "Específicos", title: "6. Leitura e escrita na Educação Infantil;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_12", tag: "Português", title: "12. Sintaxe da oração (termos da oração) e do período (coordenação e subordinação)." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_6", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_6", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
             },
             {
-                id: 7,
-                dateObj: new Date(2026, 5, 7),
-                dayLabel: "Dia 7",
-                title: "SIMULADO DOMINICAL - MASTER",
-                disciplina: "Múltiplas Disciplinas",
-                peso: "Condicionamento de Prova",
-                theory: `
-                    <div class="bg-red-50 border-2 border-red-500 p-8 md:p-12 rounded-3xl mb-8 text-center relative overflow-hidden shadow-xl">
-                        <div class="absolute -left-10 -bottom-10 opacity-10">
-                            <i class="ph-fill ph-warning-octagon text-[15rem] text-red-900"></i>
-                        </div>
-                        <i class="ph-fill ph-siren text-6xl text-red-600 mb-6 relative z-10 animate-pulse"></i>
-                        <h3 class="text-4xl md:text-5xl font-black text-red-900 mb-4 relative z-10 tracking-tight">AMBIENTE REAL DE PROVA</h3>
-                        <p class="text-xl text-red-800 relative z-10 font-medium max-w-3xl mx-auto leading-relaxed">Chegou a hora da verdade. Desligue o celular. Isole-se da família. Posicione um copo d'água ao seu lado. Você enfrentará agora <strong>50 questões cirúrgicas</strong> elaboradas com o mesmo rigor, nível de distratores e matriz textual da Banca Ápice Consultoria. O tempo não perdoa quem não treina.</p>
-                    </div>
-                `,
-                questions: generateProceduralQuestions(50, "Simulado Geral - Nível de Prova")
+                week: "Semana 7",
+                dates: "27/07 a 02/08",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_13", tag: "Português", title: "13. Pontuação." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_7", tag: "Informática", title: "7. Segurança da informação: 7.1. Procedimentos de segurança; 7.2. Noções de vírus. worms e pragas virtuais; 7.3. Aplicativos de segurança (antivírus. firewall. anti-spyware. etc.); 7.4. Procedimentos de backup; 7.5. Gerenciador de senha. TOTP. passkey. 2FA e VPN." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_7", tag: "Pedagógicos", title: "7. Planejamento de ensino e aprendizagem." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_7", tag: "Específicos", title: "7. Ensino de Matemática;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_14", tag: "Português", title: "14. Concordância verbal e nominal." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_7", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_7", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
+            },
+            {
+                week: "Semana 8",
+                dates: "03/08 a 09/08",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_15", tag: "Português", title: "15. Regência verbal e nominal." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "info_8", tag: "Informática", title: "8. Armazenamento de dados na nuvem (cloud storage)." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "ped_8", tag: "Pedagógicos", title: "8. Política e legislação da educação brasileira: Lei nº 9.394/1996 atualizada; Financiamento da educação a partir de 1996; Plano Nacional de Educação (PNE); Base Nacional Comum Curricular (BNCC); Decreto nº 11.370/2023." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_8", tag: "Específicos", title: "8. Jogos e brincadeiras na educação;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_16", tag: "Português", title: "16. Crase." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_8", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_8", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
+            },
+            {
+                week: "Semana 9",
+                dates: "10/08 a 16/08",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_17", tag: "Português", title: "17. Semântica: linguagem e significação. ambiguidade. duplo sentido. polissemia. antonímia. sinonímia. hiperonímia. hiponímia. homonímia e paronímia." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "mun_1", tag: "Município", title: "1. Lei orgânica municipal de 19 de julho de 1997." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "port_18", tag: "Português", title: "18. Pragmática: o significado contextual." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_9", tag: "Específicos", title: "9. Uso das tecnologias digitais na sala de aula;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_19", tag: "Português", title: "19. Variação linguística e preconceito linguístico." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_9", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_9", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
+            },
+            {
+                week: "Semana 10",
+                dates: "17/08 a 23/08",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "port_20", tag: "Português", title: "20. Os elementos da comunicação e as funções da linguagem." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "mun_2", tag: "Município", title: "2. Lei 147/2005 - Estatuto do servidor." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "port_21", tag: "Português", title: "21. Linguagem denotativa e conotativa." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "esp_10", tag: "Específicos", title: "10. Formas de pensar e trabalhar o desenho na escola;" }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "port_22", tag: "Português", title: "22. Figuras de linguagem." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_10", tag: "Revisão", title: "Revisão dos conteúdos estudados na semana." }] },
+                    { day: "Domingo", type: "Simulado", subjects: [{ id: "sim_10", tag: "Simulado", title: "Resolução de Questões e Simulado." }] }
+                ]
+            },
+            {
+                week: "Semana 11 (Reta Final)",
+                dates: "24/08 a 30/08",
+                days: [
+                    { day: "Segunda", subjects: [
+                        { id: "esp_11", tag: "Específicos", title: "11. Cuidar e educar." }
+                    ]},
+                    { day: "Terça", subjects: [
+                        { id: "fin_1", tag: "Revisão Final", title: "Revisão Geral e Resolução de Questões: Português e Informática." }
+                    ]},
+                    { day: "Quarta", subjects: [
+                        { id: "fin_2", tag: "Revisão Final", title: "Revisão Geral e Resolução de Questões: Conhecimentos Pedagógicos e Município." }
+                    ]},
+                    { day: "Quinta", subjects: [
+                        { id: "fin_3", tag: "Revisão Final", title: "Revisão Geral e Resolução de Questões: Conhecimentos Específicos." }
+                    ]},
+                    { day: "Sexta", subjects: [
+                        { id: "fin_4", tag: "Revisão Final", title: "DIA 28/08: Leitura de resumos, mapas mentais e preparação mental para a prova." }
+                    ]},
+                    { day: "Sábado", type: "Revisão", subjects: [{ id: "rev_11", tag: "Revisão Final", title: "Descanso e Revisão Leve Véspera." }] },
+                    { day: "Domingo", type: "Conclusão", subjects: [{ id: "sim_11", tag: "Sucesso!", title: "DIA DA PROVA OBJETIVA! Edital 100% Finalizado. Boa sorte!" }] }
+                ]
             }
         ];
 
-        function getSubjectPattern(dayOfWeek) {
-            if(dayOfWeek === 1 || dayOfWeek === 3) return { disp: "Conhecimentos Pedagógicos & Legislação", focus: "LDB, ECA, BNCC e Avaliação Educacional", qtd: 15 };
-            if(dayOfWeek === 2) return { disp: "Língua Portuguesa", focus: "Sintaxe, Concordância, Regência e Semântica", qtd: 15 };
-            if(dayOfWeek === 4) return { disp: "Informática Básica", focus: "Sistemas, Redes e Segurança da Informação", qtd: 15 };
-            if(dayOfWeek === 5) return { disp: "Legislação e História Local", focus: "Lei Orgânica, Estatuto e Formação de Assunção", qtd: 15 };
-            if(dayOfWeek === 6) return { disp: "SUPER REVISÃO DA SEMANA", focus: "Revisão Consolidada", qtd: 35 };
-            if(dayOfWeek === 0) return { disp: "SIMULADO DOMINICAL", focus: "Simulado Padrão Ápice", qtd: 50 };
+        let totalTasks = 0;
+        let completedTasks = 0;
+
+        function getTagColor(tag) {
+            switch(tag) {
+                case 'Português': return 'bg-blue-100 text-blue-800';
+                case 'Informática': return 'bg-purple-100 text-purple-800';
+                case 'Município': return 'bg-yellow-100 text-yellow-800';
+                case 'Pedagógicos': return 'bg-orange-100 text-orange-800';
+                case 'Específicos': return 'bg-teal-100 text-teal-800';
+                case 'Revisão': return 'bg-slate-200 text-slate-800';
+                case 'Simulado': return 'bg-rose-100 text-rose-800';
+                case 'Revisão Final': return 'bg-indigo-100 text-indigo-800';
+                case 'Sucesso!': return 'bg-emerald-100 text-emerald-800 font-bold';
+                default: return 'bg-slate-100 text-slate-800';
+            }
         }
 
-        function generateProceduralTheory(dayNum, subjectObj, dateObj) {
-            if(dayNum % 7 === 6) { 
-                let weekNum = Math.ceil(dayNum / 7);
-                return `
-                    <div class="bg-gradient-to-r from-brand-900 to-brand-700 text-white p-10 md:p-12 rounded-3xl mb-8 shadow-2xl text-center">
-                        <i class="ph-fill ph-brain text-7xl text-accent mb-6"></i>
-                        <h3 class="text-4xl md:text-5xl font-black mb-4">Super Revisão da Semana ${weekNum}</h3>
-                        <p class="text-xl font-medium text-brand-100 max-w-2xl mx-auto">O processo de fixação depende do esforço cognitivo em resgatar as memórias. Resolva as 35 questões com máxima atenção aos detalhes e comentários gerados ao final de cada uma.</p>
+        function renderSchedule() {
+            const wrapper = document.getElementById('weeks-wrapper');
+            let html = '';
+
+            scheduleData.forEach((week, wIndex) => {
+                html += `
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="bg-slate-50 px-5 py-4 border-b border-slate-200 flex justify-between items-center cursor-pointer" onclick="toggleWeek(${wIndex})">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-800">${week.week}</h3>
+                            <p class="text-xs font-medium text-slate-500">${week.dates}</p>
+                        </div>
+                        <i id="icon-week-${wIndex}" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
                     </div>
+                    <div id="content-week-${wIndex}" class="divide-y divide-slate-100 transition-all duration-300">
                 `;
-            }
-            if(dayNum % 7 === 0) { 
-                let weekNum = Math.floor(dayNum / 7);
-                return `
-                    <div class="bg-red-50 border-2 border-red-500 p-10 rounded-3xl mb-8 text-center shadow-xl">
-                        <i class="ph-fill ph-warning-octagon text-7xl text-red-600 mb-6"></i>
-                        <h3 class="text-4xl font-black text-red-900 mb-4">Simulado de Resistência - Semana ${weekNum}</h3>
-                        <p class="text-xl text-red-800 font-medium">50 questões inéditas misturando todos os tópicos do edital de Professor A. Treino difícil, batalha fácil.</p>
-                    </div>
-                `;
-            }
 
-            return `
-                <div class="mb-10 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-200">
-                    <h3 class="text-3xl font-black text-brand-900 mb-6 border-b-4 border-brand-100 pb-3">Canto do Saber: Aprofundamento</h3>
-                    <p class="drop-cap text-slate-700">Avançando firmemente em nosso cronograma estratégico até o dia da prova (23/08), nossa imersão de hoje destrincha os labirintos de <strong>${subjectObj.focus}</strong>. O perfil da banca Ápice exige não apenas decoreba, mas a aplicação do conhecimento no contexto da Educação Básica e Administração Municipal.</p>
-                    <p class="mt-6 text-xl text-slate-700 leading-relaxed text-justify">O esforço do Dia ${dayNum} forjará sua aprovação. Leia atentamente as alternativas abaixo. O sistema foi programado para detalhar as explicações de todas as opções de cada questão logo após a sua resposta. Use os comentários como material de revisão ativa.</p>
-                </div>
-            `;
-        }
+                week.days.forEach(day => {
+                    html += `
+                        <div class="p-5 flex flex-col md:flex-row gap-4 hover:bg-slate-50 transition-colors">
+                            <div class="md:w-32 flex-shrink-0">
+                                <span class="text-sm font-bold ${day.day === 'Sábado' || day.day === 'Domingo' ? 'text-brand-500' : 'text-slate-700'}">${day.day}</span>
+                            </div>
+                            <div class="flex-grow space-y-3">
+                    `;
 
-        function buildFullSchedule() {
-            let fullDB = [...week1Database];
-            let startDate = new Date(2026, 5, 1); 
+                    day.subjects.forEach(subject => {
+                        totalTasks++;
+                        const isChecked = localStorage.getItem(subject.id) === 'true';
+                        if (isChecked) completedTasks++;
 
-            for(let i = 8; i <= 84; i++) {
-                let currentDay = new Date(startDate);
-                currentDay.setDate(startDate.getDate() + (i - 1));
-                
-                let dayOfWeek = currentDay.getDay(); 
-                let subConfig = getSubjectPattern(dayOfWeek);
+                        html += `
+                                <div class="flex items-start gap-3">
+                                    <input type="checkbox" id="${subject.id}" ${isChecked ? 'checked' : ''} 
+                                        onchange="toggleTask('${subject.id}')"
+                                        class="task-checkbox mt-1 w-5 h-5 rounded border-slate-300 text-brand-500 focus:ring-brand-500 cursor-pointer">
+                                    <label for="${subject.id}" class="cursor-pointer flex-grow text-sm text-slate-700 leading-relaxed transition-colors">
+                                        <span class="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider mb-1 ${getTagColor(subject.tag)}">${subject.tag}</span><br>
+                                        ${subject.title}
+                                    </label>
+                                </div>
+                        `;
+                    });
 
-                fullDB.push({
-                    id: i,
-                    dateObj: currentDay,
-                    dayLabel: `Dia ${i}`,
-                    title: `Imersão Estratégica: ${subConfig.disp}`,
-                    disciplina: subConfig.disp,
-                    peso: dayOfWeek === 6 || dayOfWeek === 0 ? "Treinamento Extremo" : "Teoria e Casos Práticos",
-                    theory: generateProceduralTheory(i, subConfig, currentDay),
-                    questions: generateProceduralQuestions(subConfig.qtd, subConfig.focus)
+                    html += `
+                            </div>
+                        </div>
+                    `;
                 });
-            }
-            return fullDB;
+
+                html += `
+                    </div>
+                </div>
+                `;
+            });
+
+            wrapper.innerHTML = html;
+            updateProgressUI();
         }
 
-        const fullAulasDatabase = buildFullSchedule();
+        function toggleWeek(index) {
+            const content = document.getElementById(`content-week-${index}`);
+            const icon = document.getElementById(`icon-week-${index}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            } else {
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
+            }
+        }
 
+        function toggleTask(id) {
+            const checkbox = document.getElementById(id);
+            localStorage.setItem(id, checkbox.checked);
+            
+            if (checkbox.checked) {
+                completedTasks++;
+            } else {
+                completedTasks--;
+            }
+            updateProgressUI();
+        }
+
+        function updateProgressUI() {
+            const percentage = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+            document.getElementById('progress-text').innerText = `${percentage}% (${completedTasks}/${totalTasks})`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+            
+            if (percentage === 100) {
+                document.getElementById('progress-bar').classList.remove('bg-brand-500');
+                document.getElementById('progress-bar').classList.add('bg-emerald-500');
+                document.getElementById('progress-text').classList.remove('text-brand-600');
+                document.getElementById('progress-text').classList.add('text-emerald-600');
+            } else {
+                document.getElementById('progress-bar').classList.add('bg-brand-500');
+                document.getElementById('progress-bar').classList.remove('bg-emerald-500');
+                document.getElementById('progress-text').classList.add('text-brand-600');
+                document.getElementById('progress-text').classList.remove('text-emerald-600');
+            }
+        }
+
+        function resetProgress() {
+            if(confirm("Tem certeza que deseja zerar todo o seu progresso? Essa ação não pode ser desfeita.")) {
+                scheduleData.forEach(week => {
+                    week.days.forEach(day => {
+                        day.subjects.forEach(subject => {
+                            localStorage.removeItem(subject.id);
+                        });
+                    });
+                });
+                completedTasks = 0;
+                renderSchedule();
+            }
+        }
+
+        // This makes the browser recognize it as an installable app capable page (Progressive Web App concept)
+        function initOfflineSupport() {
+            try {
+                const swCode = `
+                    const CACHE_NAME = 'main-concursada-cache-v1';
+                    self.addEventListener('install', event => {
+                        self.skipWaiting();
+                    });
+                    self.addEventListener('activate', event => {
+                        event.waitUntil(clients.claim());
+                    });
+                    self.addEventListener('fetch', event => {
+                        // For a single file HTML, we just bypass and let the browser cache handle it natively,
+                        // but having the SW registered helps trigger the "Add to Home Screen" prompt on Android.
+                        event.respondWith(fetch(event.request).catch(() => new Response('Offline Mode Active. Reload the page.')));
+                    });
+                `;
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register(swUrl).then(() => {
+                        console.log('App Mode / Offline Support Ready.');
+                    }).catch(err => console.log('SW Registration failed', err));
+                }
+            } catch (e) {
+                console.log('Offline support setup skipped.');
+            }
+        }
+
+        // Initialize App
         document.addEventListener('DOMContentLoaded', () => {
-            renderRaioX();
-            renderCronograma();
-            updateGlobalProgress();
+            renderSchedule();
+            initOfflineSupport();
+            
+            // Expand only the first week by default, collapse others
+            scheduleData.forEach((_, index) => {
+                if(index !== 0) toggleWeek(index);
+            });
         });
 
-        function switchTab(tabId) {
-            document.getElementById('view-raiox').classList.add('hidden');
-            document.getElementById('view-cronograma').classList.add('hidden');
-            document.getElementById('view-aula').classList.add('hidden');
-            
-            document.getElementById('tab-raiox').className = 'px-4 py-1.5 rounded-md text-sm font-semibold transition-colors text-brand-100 hover:text-white hover:bg-brand-600';
-            document.getElementById('tab-cronograma').className = 'px-4 py-1.5 rounded-md text-sm font-semibold transition-colors text-brand-100 hover:text-white hover:bg-brand-600';
-
-            if (tabId === 'raiox' || tabId === 'cronograma') {
-                document.getElementById(`view-${tabId}`).classList.remove('hidden');
-                
-                if (tabId === 'raiox') {
-                    document.getElementById('tab-raiox').className = 'px-4 py-1.5 rounded-md text-sm font-semibold transition-colors bg-white text-brand-900 shadow-sm';
-                } else {
-                    document.getElementById('tab-cronograma').className = 'px-4 py-1.5 rounded-md text-sm font-semibold transition-colors bg-white text-brand-900 shadow-sm';
-                }
-            }
-        }
-
-        function renderRaioX() {
-            const container = document.getElementById('edital-container');
-            container.innerHTML = '';
-            
-            concursoData.conteudoProgramatico.forEach(topic => {
-                const isTopicStudied = state.studiedTopics.includes(topic.id.toString());
-                const topicClass = isTopicStudied ? 'topic-studied border-slate-300' : 'border-brand-200 hover:border-brand-400';
-                
-                let subtopicsHtml = topic.subtopics.map((sub, idx) => {
-                    const subId = `${topic.id}-${idx}`;
-                    const isSubStudied = state.studiedTopics.includes(subId);
-                    const subClass = isSubStudied ? 'line-through opacity-40 text-slate-400' : 'text-slate-700 hover:text-brand-600 font-medium';
-                    return `
-                        <div id="sub-${subId}" class="text-sm sm:text-base mt-2 pl-4 py-1 border-l-2 border-slate-200 cursor-pointer transition-colors ${subClass}" onclick="toggleEditalTopic('${subId}', event)">
-                            ${sub}
-                        </div>
-                    `;
-                }).join('');
-
-                const cardHtml = `
-                    <div id="topic-${topic.id}" class="bg-white rounded-2xl border-2 shadow-sm p-5 md:p-6 transition-all duration-300 ${topicClass}">
-                        <div class="cursor-pointer flex items-start justify-between gap-4" onclick="toggleEditalTopic('${topic.id}', event)">
-                            <h3 class="text-xl font-black text-brand-700 transition-colors leading-tight">${topic.title}</h3>
-                            <i class="ph ph-check-circle text-3xl flex-shrink-0 ${isTopicStudied ? 'text-green-500 ph-fill' : 'text-slate-200 hover:text-green-300'}"></i>
-                        </div>
-                        <div class="mt-5 space-y-1">
-                            ${subtopicsHtml}
-                        </div>
-                    </div>
-                `;
-                container.innerHTML += cardHtml;
-            });
-            updateEditalProgress();
-        }
-
-        function toggleEditalTopic(id, event) {
-            event.stopPropagation();
-            const index = state.studiedTopics.indexOf(id);
-            if (index > -1) {
-                state.studiedTopics.splice(index, 1);
-            } else {
-                state.studiedTopics.push(id);
-            }
-            localStorage.setItem('aprovaIA_topics', JSON.stringify(state.studiedTopics));
-            renderRaioX();
-        }
-
-        function updateEditalProgress() {
-            let totalSub = 0;
-            concursoData.conteudoProgramatico.forEach(t => totalSub += t.subtopics.length);
-            let marcados = state.studiedTopics.filter(id => id.includes('-')).length;
-            let percent = totalSub === 0 ? 0 : Math.round((marcados / totalSub) * 100);
-            document.getElementById('edital-progress').innerText = percent;
-        }
-
-        function updateGlobalProgress() {
-            let totalDias = fullAulasDatabase.length; 
-            let pct = Math.round((state.completedClasses.length / totalDias) * 100);
-            
-            const daysCompleted = document.getElementById('days-completed');
-            if(daysCompleted) daysCompleted.innerText = state.completedClasses.length;
-        }
-
-        function formatDate(date) {
-            return date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' }).replace('.', '');
-        }
-
-        function renderCronograma() {
-            const container = document.getElementById('cronograma-list');
-            container.innerHTML = '';
-
-            for(let w = 0; w < 12; w++) {
-                let weekHtml = `<div class="mb-10"><h3 class="text-xl font-bold text-slate-400 mb-4 uppercase tracking-widest border-b border-slate-200 pb-2">Semana ${w+1}</h3><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">`;
-                
-                for(let d = 0; d < 7; d++) {
-                    let index = (w * 7) + d;
-                    if(index >= fullAulasDatabase.length) break;
-                    
-                    let aula = fullAulasDatabase[index];
-                    const isCompleted = state.completedClasses.includes(aula.id);
-                    const isWeekend = aula.dateObj.getDay() === 0 || aula.dateObj.getDay() === 6;
-                    
-                    let bgClass = isCompleted ? 'bg-slate-50 border-slate-200 opacity-70' : 'bg-white border-brand-200 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-brand-500';
-                    if(!isCompleted && isWeekend) bgClass = 'bg-amber-50 border-amber-200 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-amber-500';
-                    
-                    const titleColor = isCompleted ? 'text-slate-500' : 'text-slate-900';
-                    
-                    weekHtml += `
-                        <div class="rounded-xl border-2 p-5 flex flex-col justify-between transition-all duration-300 cursor-pointer ${bgClass} group" onclick="abrirAula(${aula.id})">
-                            <div>
-                                <div class="flex justify-between items-start mb-3">
-                                    <div class="flex flex-col">
-                                        <span class="text-xs font-bold text-slate-400 mb-1">${formatDate(aula.dateObj)}</span>
-                                        <span class="px-2 py-1 bg-brand-100 text-brand-800 text-xs font-black rounded uppercase tracking-wide inline-block w-max">${aula.dayLabel}</span>
-                                    </div>
-                                    ${isCompleted ? '<i class="ph-fill ph-check-circle text-green-500 text-3xl"></i>' : '<i class="ph-fill ph-play-circle text-brand-300 text-3xl group-hover:text-brand-500 transition-colors"></i>'}
-                                </div>
-                                <h4 class="font-black text-lg leading-tight mb-2 ${titleColor}">${aula.title}</h4>
-                                <p class="text-sm text-slate-500 font-medium line-clamp-2">${aula.disciplina}</p>
-                            </div>
-                            <div class="mt-4 pt-3 border-t border-slate-200/60 flex justify-between items-center">
-                                <span class="text-xs font-bold text-slate-400 uppercase">${aula.peso}</span>
-                                <span class="text-xs font-black text-brand-600 bg-brand-50 px-2 py-1 rounded">${aula.questions.length} Q</span>
-                            </div>
-                        </div>
-                    `;
-                }
-                weekHtml += `</div></div>`;
-                container.innerHTML += weekHtml;
-            }
-        }
-
-        function abrirAula(id) {
-            switchTab('aula');
-            document.getElementById('view-aula').classList.remove('hidden');
-            window.scrollTo(0, 0);
-            
-            document.getElementById('aula-loading').classList.remove('hidden');
-            document.getElementById('aula-content').classList.add('hidden');
-
-            setTimeout(() => {
-                carregarConteudoAula(id);
-                document.getElementById('aula-loading').classList.add('hidden');
-                document.getElementById('aula-content').classList.remove('hidden');
-            }, 800); 
-        }
-
-        function carregarConteudoAula(id) {
-            const aula = fullAulasDatabase.find(a => a.id === id);
-            state.currentAulaId = id;
-            state.answers = {}; 
-            
-            document.getElementById('aula-date-badge').innerText = formatDate(aula.dateObj);
-            document.getElementById('aula-badge').innerText = `${aula.dayLabel} • ${aula.disciplina}`;
-            document.getElementById('aula-title').innerText = aula.title;
-            document.getElementById('aula-theory-container').innerHTML = aula.theory;
-            
-            updateGlobalProgress();
-            
-            const qContainer = document.getElementById('questions-container');
-            qContainer.innerHTML = '';
-
-            aula.questions.forEach((q, qIndex) => {
-                let optionsData = q.options.map((text, idx) => ({ text, originalIndex: idx }));
-                shuffleArray(optionsData);
-
-                let optionsHtml = optionsData.map((opt, currentIdx) => {
-                    const isCorrect = opt.originalIndex === q.correct;
-                    const letter = String.fromCharCode(65 + currentIdx); 
-                    return `
-                        <div id="q${qIndex}-opt${currentIdx}" data-original-index="${opt.originalIndex}" class="alt-container flex items-stretch border-2 border-slate-200 rounded-xl overflow-hidden group cursor-pointer mb-3">
-                            <div class="w-14 bg-slate-50 border-r-2 border-slate-200 flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition-colors z-10" onclick="toggleScissors(${qIndex}, ${currentIdx}, event)" title="Eliminar alternativa">
-                                <i class="ph-fill ph-scissors text-2xl"></i>
-                            </div>
-                            <div class="flex-grow p-4 md:p-5 flex items-start gap-4 bg-white" onclick="selectAnswer(${qIndex}, ${currentIdx}, ${isCorrect}, ${opt.originalIndex})">
-                                <span class="font-black text-brand-600 text-lg mt-0.5">${letter})</span>
-                                <span class="text-slate-700 font-medium leading-relaxed alt-text text-base md:text-lg">${opt.text}</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
-                qContainer.innerHTML += `
-                    <div class="q-card p-6 md:p-8 bg-white rounded-3xl shadow-sm border border-slate-200 mb-8">
-                        <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-100">
-                            <h4 class="font-black text-2xl text-slate-900 bg-slate-100 px-4 py-1.5 rounded-lg">Questão ${qIndex + 1}</h4>
-                            <span class="px-4 py-1.5 text-sm font-black rounded-lg uppercase tracking-wider ${q.level==='Fácil'?'bg-green-100 text-green-700': q.level==='Média'?'bg-amber-100 text-amber-700':'bg-red-100 text-red-700'}">${q.level}</span>
-                        </div>
-                        <p class="text-xl font-bold text-slate-800 mb-8 leading-relaxed">${q.text}</p>
-                        <div class="options-list">
-                            ${optionsHtml}
-                        </div>
-                        <div id="feedback-q${qIndex}" class="feedback hidden mt-8 bg-slate-50 rounded-2xl overflow-hidden shadow-inner border border-slate-200">
-                            <!-- Inserido dinamicamente com todas as explicações -->
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        function toggleScissors(qIndex, optIndex, event) {
-            event.stopPropagation(); 
-            if(state.answers[qIndex]) return; 
-
-            const container = document.getElementById(`q${qIndex}-opt${optIndex}`);
-            const textElement = container.querySelector('.alt-text');
-            
-            if(container.classList.contains('eliminated')) {
-                container.classList.remove('eliminated');
-                textElement.classList.remove('line-through');
-            } else {
-                container.classList.add('eliminated');
-                textElement.classList.add('line-through');
-            }
-        }
-
-        function selectAnswer(qIndex, selectedOptIndex, isCorrect, originalIndex) {
-            if(state.answers[qIndex]) return; 
-
-            state.answers[qIndex] = { isCorrect };
-            
-            const aula = fullAulasDatabase.find(a => a.id === state.currentAulaId);
-            const questionData = aula.questions[qIndex];
-
-            const qCard = document.getElementById(`feedback-q${qIndex}`).parentElement;
-            const optionsNodes = qCard.querySelectorAll('.alt-container');
-            
-            // Travar opções e revelar cores
-            optionsNodes.forEach((opt, currentIdx) => {
-                opt.classList.add('locked');
-                opt.classList.remove('eliminated'); 
-                opt.querySelector('.alt-text').classList.remove('line-through');
-
-                const innerDiv = opt.querySelector('.flex-grow');
-                const isThisOptCorrect = (parseInt(opt.getAttribute('data-original-index')) === questionData.correct);
-                
-                if (currentIdx === selectedOptIndex) {
-                    if (isCorrect) {
-                        opt.classList.add('alt-correct');
-                        innerDiv.classList.add('bg-transparent');
-                    } else {
-                        opt.classList.add('alt-wrong');
-                        innerDiv.classList.add('bg-transparent');
-                    }
-                } else if (isThisOptCorrect) {
-                    // Revela a correta caso tenha errado
-                    opt.classList.add('alt-correct');
-                    opt.classList.add('opacity-80');
-                    innerDiv.classList.add('bg-transparent');
-                } else {
-                    opt.classList.add('alt-inactive');
-                }
-            });
-
-            // Construir o laudo detalhado (Exhaustive Explanation)
-            let detailedFeedbackHTML = `
-                <div class="${isCorrect ? 'bg-green-600' : 'bg-red-600'} text-white p-6 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <i class="ph-fill ${isCorrect ? 'ph-check-circle' : 'ph-x-circle'} text-4xl"></i>
-                        <h4 class="text-2xl font-black">${isCorrect ? 'EXCELENTE! VOCÊ ACERTOU.' : 'ATENÇÃO! RESPOSTA INCORRETA.'}</h4>
-                    </div>
-                </div>
-                <div class="p-6 md:p-8">
-                    <h5 class="text-xl font-black text-slate-800 mb-6 flex items-center"><i class="ph-fill ph-magnifying-glass mr-2 text-brand-600"></i> Análise Exaustiva das Alternativas:</h5>
-                    <ul class="space-y-4">
-            `;
-
-            optionsNodes.forEach((optNode, currentIdx) => {
-                const letter = String.fromCharCode(65 + currentIdx);
-                const origIdx = parseInt(optNode.getAttribute('data-original-index'));
-                const expText = questionData.explanations[origIdx];
-                const isThisOptCorrect = (origIdx === questionData.correct);
-                
-                const boxColor = isThisOptCorrect ? 'bg-green-50 border-green-200' : 'bg-white border-slate-200';
-                
-                detailedFeedbackHTML += `
-                    <li class="p-4 rounded-xl border-2 ${boxColor} shadow-sm text-slate-700 leading-relaxed text-lg">
-                        <span class="font-black text-xl mr-2 ${isThisOptCorrect ? 'text-green-700' : 'text-slate-900'}">${letter})</span> 
-                        ${expText}
-                    </li>
-                `;
-            });
-
-            detailedFeedbackHTML += `</ul></div>`;
-
-            const feedbackDiv = document.getElementById(`feedback-q${qIndex}`);
-            feedbackDiv.innerHTML = detailedFeedbackHTML;
-            feedbackDiv.classList.remove('hidden');
-            feedbackDiv.classList.add('fade-in');
-        }
-
-        function finalizarAula() {
-            const aula = fullAulasDatabase.find(a => a.id === state.currentAulaId);
-            const totalQ = aula.questions.length;
-            const answeredCount = Object.keys(state.answers).length;
-
-            if (answeredCount < totalQ) {
-                showWarning(`Faltam responder ${totalQ - answeredCount} questões para fechar a aula!`);
-                return;
-            }
-
-            let acertos = 0;
-            for (let key in state.answers) {
-                if (state.answers[key].isCorrect) acertos++;
-            }
-
-            if (!state.completedClasses.includes(aula.id)) {
-                state.completedClasses.push(aula.id);
-                localStorage.setItem('aprovaIA_classes', JSON.stringify(state.completedClasses));
-                updateGlobalProgress();
-                renderCronograma();
-            }
-
-            const percentual = (acertos / totalQ) * 100;
-            
-            document.getElementById('diag-acertos').innerText = acertos;
-            document.getElementById('diag-total').innerText = totalQ;
-            document.getElementById('diag-percent').innerText = `Aproveitamento: ${percentual.toFixed(0)}%`;
-            
-            const diagFortes = document.getElementById('diag-fortes');
-            const diagFracos = document.getElementById('diag-fracos');
-            const diagFrase = document.getElementById('diag-frase');
-
-            if (percentual >= 80) {
-                document.getElementById('diag-acertos').className = 'text-green-600';
-                diagFortes.innerText = "Sua capacidade analítica e de leitura profunda estão perfeitamente ajustadas ao nível do edital. O uso do Canto do Saber está consolidando sua memória.";
-                diagFracos.innerText = "Atenção cirúrgica às raras exceções normativas e pegadinhas linguísticas que ainda tiram frações dos seus pontos.";
-                diagFrase.innerText = `"A excelência não é um ato, mas um hábito." – O cargo de Professor A em Assunção já é seu.`;
-            } else if (percentual >= 50) {
-                document.getElementById('diag-acertos').className = 'text-amber-500';
-                diagFortes.innerText = "Você tem a base e conhece a literalidade da lei e das teorias pedagógicas primárias.";
-                diagFracos.innerText = "As bancas, especialmente a Ápice, testam seu cansaço através de inversão de conceitos longos. Comece a ler todas as análises de alternativas ao final das questões.";
-                diagFrase.innerText = `"A repetição é a mãe da retenção." Revise os gabaritos e avance firme!`;
-            } else {
-                document.getElementById('diag-acertos').className = 'text-red-600';
-                diagFortes.innerText = "O processo de aprendizagem começa pela identificação exata das fraquezas. Sua resiliência em enfrentar as 50 questões garante a vitória amanhã.";
-                diagFracos.innerText = "Lacunas críticas em fundamentos. Retorne ao Canto do Saber, releia os PDFs originais (LOM, Estatuto) e faça um resumo tático antes de avançar de dia.";
-                diagFrase.innerText = `"Mais vale suar no treinamento do que sangrar na batalha." Não desanime, a posse o aguarda.`;
-            }
-
-            document.getElementById('modal-diagnostico').classList.remove('hidden');
-            document.getElementById('modal-diagnostico').classList.add('flex');
-        }
-
-        function fecharModal() {
-            document.getElementById('modal-diagnostico').classList.add('hidden');
-            document.getElementById('modal-diagnostico').classList.remove('flex');
-            switchTab('cronograma');
-            window.scrollTo(0, 0);
-        }
     </script>
 </body>
 </html>
